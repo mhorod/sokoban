@@ -82,11 +82,31 @@
       </div>
 
 
-    <div id="game-wrapper"></div>
+    <div id="game-wrapper">
+      <div id="game-ui">
+
+        <div id="satisfaction-counter">
+        </div>
+
+        <div id="game">
+        </div>
+
+        <div class="button-row">
+
+          <button class="btn" id="restart-button">
+              <ion-icon name="refresh-outline"></ion-icon>
+              <span class="text"> Restart </span>
+          </button>
+      
+        </div>
+      </div>
+      
+    </div>
+
     <div id="level-editor-wrapper">
       <div id ="level-editor">
         <div id="edited-level-wrapper"></div>
-        <div id="edit-buttons">
+        <div class="button-row">
           <button class="btn active"> 
             Place floor
           </button>
@@ -105,6 +125,11 @@
           
           <button class="btn">
             Place player
+          </button>
+
+          <button class="btn" id="save-button">
+              <ion-icon name="save-outline"></ion-icon>
+              <span class="text"> Save </span>
           </button>
         </div>
 
@@ -126,7 +151,15 @@
     </main>
 
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+  <script src="load_and_save.js"> </script>
   <script src="menu.js"></script>
+  <script src="difficulty_menu.js"></script>
+  <script src="all_levels_menu.js"></script>
   <script src="levels.js"></script>
+  <script src="level.js"></script>
+  <script src="load_levels.js"></script> 
+  <script src="movement_controls.js"></script>
+  <script src="movement.js"></script>
+  <script src="drawing.js"></script>
   <script src="game.js"></script>
 </body>

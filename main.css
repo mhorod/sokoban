@@ -111,8 +111,14 @@ body {
     display: flex;
 }
 
-#game-wrapper {
-    position:relative;
+#game-ui {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#game {
+    position: relative;
     padding: 20px;
 }
 
@@ -214,6 +220,20 @@ h1 {
     background-color: #111;
 }
 
+#game-ui {
+  padding: 10px;
+}
+
+#game-wrapper 
+{
+  display: none;
+}
+
+#level-editor-wrapper
+{
+  display: none;
+}
+
 #level-editor-menu, #level-selector-menu {
     display: flex;
     flex-direction: row;
@@ -235,8 +255,10 @@ h1 {
   position: relative;
 }
 
-#edit-buttons {
+.button-row {
   display: flex;
+  flex-direction: row;
+  align-items: center;
   padding: 10px;
 }
 

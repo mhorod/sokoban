@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.esm.js"></script>
+    <link rel="stylesheet" href="main.css" type="text/css"/>
+    <title>倉庫番</title>
+</head>
+
+<body>
+    <main>
+        <h1> Sokoban by rybka
+            <ion-icon class="fish" name="fish-outline"></ion-icon>
+            plum
+        </h1>
+
+      <button class='btn' id='main-menu-btn' style="display:none">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        <span class="text">Back to main menu</span>
+      </button>
+    <div id="main-menu" class="menu">
+      <div class="menu-buttons">
+        <button class='btn' id='play-by-difficulty-btn'>
+          <ion-icon name="play-outline"></ion-icon>
+          <span class="text"> Play by difficulty </span>
+        </button>
+        <button class='btn' id='play-all-levels-btn'>
+          <ion-icon name="apps-outline"></ion-icon>
+          <span class="text"> Play all levels </span>
+        </button>
+
+        <button class='btn' id='level-editor-btn'>
+          <ion-icon name="build-outline"></ion-icon>
+          <span class="text"> Level editor </span>
+        </button>
+      </div>
+
+    </div>
+    
+    <div id="difficulty-menu" class="menu" style="display:none">
+        <br>
+        <div class="menu-buttons">
+          <button class='btn' id='easy-btn'>
+            <ion-icon class="easy" name="remove-outline"></ion-icon>
+            <span class="text"> Easy </span>
+          </button>
+          <button class='btn' id='medium-btn'>
+            <ion-icon class="medium" name="reorder-two-outline"></ion-icon>
+            <span class="text"> Medium </span>
+          </button>
+          <button class='btn' id='hard-btn'>
+            <ion-icon class="hard" name="reorder-three-outline"></ion-icon>
+            <span class="text"> Hard </span>
+          </button>
+        </div>
+      </div>
+
+      <div id="all-levels-menu" class="menu" style="display:none">
+          <div class="level-preview-wrapper">
+              <div class="level-preview">
+              </div>
+          </div>
+          <div class="grid-buttons">
+          </div>
+      </div>
+
+      <div id="level-editor-menu" class="menu" style="display:none">
+          <div class="level-preview-wrapper">
+              <div class="level-preview">
+              </div>
+          </div>
+          <div class="grid-buttons">
+              <button class="btn" id="add-new-level">
+                  <ion-icon name="add-outline"></ion-icon>
+              </button>
+          </div>
+      </div>
+
+
+    <div id="game-wrapper"></div>
+    <div id="level-editor-wrapper">
+      <div id ="level-editor">
+        <div id="edited-level-wrapper"></div>
+        <div id="edit-buttons">
+          <button class="btn active"> 
+            Place floor
+          </button>
+          
+          <button class="btn"> 
+            Place wall
+          </button>
+
+          <button class="btn">
+            Place target
+          </button>
+
+          <button class="btn">
+            Place box
+          </button>
+          
+          <button class="btn">
+            Place player
+          </button>
+        </div>
+
+        <div id="level-size">
+          Level size:
+          </br>
+          <input type="text" id="level-width"/> x
+          <input type="text" id="level-height"/>
+        </div>
+      </div>
+
+    </div>
+    
+    <div id="cookies-popup"> 
+      <span id="cookies-message"> Our game uses cookies to store levels and game state. </span>
+      <button class='btn' id="accept-cookies-btn"> Ok </button>
+    </div>
+    
+    </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+  <script src="menu.js"></script>
+  <script src="levels.js"></script>
+  <script src="game.js"></script>
+</body>

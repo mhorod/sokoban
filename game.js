@@ -165,6 +165,8 @@ function play_game(game, game_state, levels)
     let next = level.index + 1
     if (next < levels.length)
       play_at_level(levels[next], levels[next], game_saver, on_level_completed)
+    else
+      finish_game(game, game_state, levels)
   }
 
   play_at_level(level, levels[level.index], game_saver, on_level_completed)

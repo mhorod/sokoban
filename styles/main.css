@@ -67,7 +67,10 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 20px;
+}
+
+.back-btn {
+  margin-bottom: 20px;
 }
 
 .menu-buttons>button {
@@ -117,6 +120,10 @@ main {
   position: relative;
   width: 0;
   height: 0;
+}
+
+.level-preview-outer-wrapper {
+  width: 100%;
 }
 
 .level-preview {
@@ -237,4 +244,8 @@ main {
 
 #controls-text {
   text-align: center;
+}
+
+.shown {
+  display: block;
 }

@@ -96,6 +96,12 @@ function play_at_level(
 {
   close_all_menus()
   open_game()
+
+  document.getElementById("main-menu-btn").onclick = _ => {
+    unlink_controls()
+    back_to_main_menu()
+  }
+
   level = clone_level(level)
   let display = draw_level(level)
   
@@ -195,6 +201,7 @@ function show_finish_game_modal(game, game_state)
 
 function finish_game(game, game_state, levels)
 {
+  unlink_controls()
   back_to_main_menu()
   let ranking_entry = { 
       name : game.name,

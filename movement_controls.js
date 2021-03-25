@@ -30,10 +30,15 @@ function next_queued_action(handler) {
 }
 
 
+function unlink_controls()
+{
+  document.removeEventListener("keydown", current_event_listener)
+}
+
 function link_controls(handler)
 {
+  unlink_controls()
   action_queue = []
-  document.removeEventListener("keydown", current_event_listener)
   current_event_listener = e => {
       if (e.code === "KeyA" || e.code === "KeyH" || e.code === "ArrowLeft")
           apply_action(handler, Actions.MOVE_LEFT)

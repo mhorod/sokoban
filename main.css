@@ -243,3 +243,6 @@ main {
   padding: 5px;
   font-size: 0.8em;
 }
+
+#continue-btn { display: none; }
+#continue-btn.shown { display: flex; }

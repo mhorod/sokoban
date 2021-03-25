@@ -24,7 +24,9 @@ function generate_all_levels_menu(game_state, levels, play_game)
 
   // Hide continue button if there is no game to continue
   if (game_state.saved_games.length == 0)
-    continue_button.style.display = "none"
+    continue_button.classList.remove("shown")
+  else
+    continue_button.classList.add("shown")
 
   ranking_button.onclick = _ => show_ranking(game_state.ranking)
   continue_button.onclick = _ => 
@@ -129,6 +131,7 @@ function open_new_game_menu(game_state, levels)
       error.innerText = ""
       let game = create_new_game(name, levels)
       play_game(game, game_state, levels)
+      generate_all_levels_menu(game_state, levels, play_game)
     }
   }
 }

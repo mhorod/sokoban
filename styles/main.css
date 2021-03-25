@@ -230,6 +230,14 @@ main {
   background-color: #333;
 }
 
+#finish-game-btn {
+  display: none;
+}
+
+#finish-game-btn.shown {
+  display: block;
+}
+
 .menu { display: none; }
 .shown { display: block; }
 .error 
@@ -248,3 +256,4 @@ main {
 #continue-btn.shown { display: flex; }
 
 #controls-text { text-align: center; }
+

@@ -160,7 +160,8 @@ function level_score(level)
 
 function play_game(game, game_state, levels)
 {
-  document.getElementById("finish-game-button").onclick = 
+  document.getElementById("finish-game-btn").classList.add("shown")
+  document.getElementById("finish-game-btn").onclick = 
     _ => finish_game(game, game_state, levels)
   let game_saver = new SaveToCookie(game, game_state)
   game_saver.save_game(game)

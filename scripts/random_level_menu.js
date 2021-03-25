@@ -15,7 +15,7 @@ function generate_random_level_menu(levels_by_difficulty, play_at_level)
   let medium = menu.querySelector("#medium-btn")
   let hard = menu.querySelector("#hard-btn")
   
-
+  document.getElementById("finish-game-btn").classList.remove("shown")
   let on_level_completed = _ => {
     back_to_main_menu() 
   }
@@ -35,4 +35,5 @@ function generate_random_level_menu(levels_by_difficulty, play_at_level)
     let level = levels_by_difficulty.hard.sample()
     play_at_level(level, level, saver, on_level_completed)
   }
+
 }

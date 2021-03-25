@@ -24,8 +24,10 @@ class Level
     this.player = [0, 0]
     this.difficulty = undefined
     this.index = undefined
+    this.completed = false
   }
 }
+
 
 function clone_level(level)
 {
@@ -36,9 +38,15 @@ function clone_level(level)
   obj.boxes = deep_array_copy(level.boxes)
   obj.targets = deep_array_copy(level.targets) 
   obj.player = deep_array_copy(level.player)  
-  obj.difficulty = deep_array_copy(level.difficulty)  
-  obj.index = deep_array_copy(level.index)  
+  obj.difficulty = level.difficulty
+  obj.index = level.index
+  obj.completed = level.completed
   return obj
+}
+
+function is_level_completed(level)
+{
+  return level.boxes.every(box => is_box_satisfied(level, box))
 }
 
 function get_box_index(level, box)

@@ -43,6 +43,7 @@ function new_player_at(x, y)
 function draw_level(level)
 {
   let element = document.createElement("div")
+  element.classList.add("level")
   if (level.width == 0 || level.height == 0) return element
   let tiles = new Array(level.width)
   element.style.width = px(level.width * TILE_SIZE)

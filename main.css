@@ -4,78 +4,19 @@ body {
     color: #fff;
 }
 
-#game-board {
-    background-color: #eee;
+.menu-title 
+{
+  text-align: center;
 }
 
-.game-board {
-    position: relative;
+#game-title {
+    display: flex;
+    align-items: center;
 }
 
-.tile {
-    border-width: 0px;
-    border-color: #ddd;
-    border-style: solid;
-    position: absolute;
-    box-sizing: border-box;
-    border-bottom: 20px solid #333 !important;
-}
-
-.tile-floor {
-    background-color: #444;
-}
-
-.tile-wall {
-    border: none;
-}
-
-.tile-target {
-    background-color: #ff6f91;
-    border-bottom: 20px solid #9c5865 !important;
-    transition: all ease 0.5s;
-}
-
-.tile-target.has-box {
-    background-color: #91ff6f;
-    border-bottom: 20px solid #5ec96c !important;
-}
-
-
-
-.player {
-    border-radius: 50%;
-    background-color: #eeeeee;
-    z-index: 1;
-    position: absolute;
-    transition: all 0.2s ease;
-    transform: scale(0.5);
-    -webkit-box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
-    box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
-    box-sizing: border-box;
-
-}
-
-.box {
-    border-radius: 4px;
-    position: absolute;
-    z-index: 1;
-    transition: all 0.2s ease;
-    background-color: #55acee;
-    box-sizing: border-box;
-    transform: scale(0.7);
-
-    -webkit-box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
-    box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
-
-    border-bottom: 8px #3b4856 solid;
-    transition-delay: 0s, 0s, 0.1s, 0.1s;
-    transition-property: left, top, transform, box-shadow;
-}
-
-.box.is-satisfied {
-    transform: scale(0.6);
+.fish {
+    padding: 5px;
+    color: #55acee;
 }
 
 #buttons {
@@ -94,7 +35,6 @@ body {
     align-items: center;
     outline: none;
 }
-
 
 .btn:hover {
     background-color: #2a2a2a;
@@ -118,6 +58,8 @@ body {
 }
 
 #game {
+    display: flex;
+    justify-content: center;
     position: relative;
     padding: 20px;
 }
@@ -128,25 +70,7 @@ main {
     align-items: center;
 }
 
-h1 {
-    display: flex;
-    align-items: center;
-}
 
-.fish {
-    padding: 5px;
-    color: #55acee;
-}
-
-#satisfaction-counter {
-    transition: all 0.5s ease;
-    font-weight: bold;
-    color: #aaa;
-}
-
-#satisfaction-counter.satisfied {
-    color: #91ff6f;
-}
 
 .menu {
     margin-top: 10px;
@@ -166,7 +90,7 @@ h1 {
 .menu-buttons > button {
     display: flex;
     justify-content: between;
-    width: 200px;
+    width: 250px;
     padding: 12px;
 }
 
@@ -211,14 +135,20 @@ h1 {
 }
 
 .level-preview {
-    border: 2px solid #eee;
-    transform-origin: top right;
-    transform: scale(0.5);
     border-radius: 5px;
     position: absolute;
     right: 10px;
     background-color: #111;
+    border: 2px solid #eee;
 }
+
+.level-preview .level
+{
+  transform: scale(0.5);
+  transform-origin: top left;
+}
+
+.level { position: relative; }
 
 #game-ui {
   padding: 10px;
@@ -287,3 +217,29 @@ h1 {
   margin-right: 10px;
 }
 
+.ranking-text { width: 400px; text-align:center; }
+#ranking table {
+  width: 400px;
+}
+#ranking tr {
+  text-align: center;
+}
+
+#ranking tr:nth-child(even)
+{
+  background-color: #333;
+}
+
+.menu { display: none; }
+.shown { display: block; }
+.error 
+{ 
+  color: #ee5555;
+  font-weight: bold;
+}
+
+#game-name-error 
+{
+  padding: 5px;
+  font-size: 0.8em;
+}

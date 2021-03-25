@@ -1,65 +1,159 @@
 // Module 2 menu 
-//  - selection of any (predefined) level
+//  - selection or creation of new game
 //  - game is automatically saved
-//  - (TODO) Ranking
+//  - ranking of completed games
 
+ALL_LEVELS_MAIN_MENU = 'all-levels-main-menu'
+CONTINUE_GAME_MENU = 'continue-game-menu'
+NEW_GAME_MENU = 'new-game-menu'
 
-// Adds CSS class to the element which makes it colored basing on difficulty
-function add_difficulty_class(element, difficulty)
-{
-  if (difficulty == EASY) element.classList.add('easy')
-  if (difficulty == MEDIUM) element.classList.add('medium')
-  if (difficulty == HARD) element.classList.add('hard')
-}
-
-
-function create_level_button(level_number, level)
+function create_game_button(game_name)
 {
   let button = document.createElement("button")
   button.classList.add("btn")
-  button.textContent = level_number
-  add_difficulty_class(button, level.difficulty)
+  button.textContent = game_name
   return button
 }
 
-function draw_preview_on_wrapper(level, preview_wrapper)
-{
-  let preview = draw_level(level).element
-  preview_wrapper.style.display = "block"
-  preview.classList.add("level-preview")
-  preview_wrapper.innerHTML = ""
-  preview_wrapper.appendChild(preview)  
-}
-
-
-function generate_all_levels_menu(game_state, original_levels, play_at_level)
+function generate_all_levels_menu(game_state, levels, play_game)
 {
   let menu = document.getElementById("all-levels-menu")
-  let buttons = menu.querySelector(".grid-buttons")
+  let continue_button = menu.querySelector("#continue-btn")
+  let new_game_button = menu.querySelector("#new-game-btn")
+  let ranking_button = menu.querySelector("#ranking-btn")
+
+  // Hide continue button if there is no game to continue
+  if (game_state.saved_games.length == 0)
+    continue_button.style.display = "none"
+
+  ranking_button.onclick = _ => show_ranking(game_state.ranking)
+  continue_button.onclick = _ => 
+    open_continue_game_menu(game_state, levels, play_game)
+  new_game_button.onclick = _ => open_new_game_menu(game_state, levels)
+}
+
+function close_all_levels_menus()
+{
+  close_menu(ALL_LEVELS_MAIN_MENU)
+  close_menu(CONTINUE_GAME_MENU)
+  close_menu(NEW_GAME_MENU)
+}
+
+function open_all_levels_main_menu()
+{
+  close_all_levels_menus()
+  open_menu(ALL_LEVELS_MAIN_MENU)
+}
+
+function show_level_preview(wrapper, level_display)
+{
+  let preview = document.createElement("div")
+  wrapper.innerHTML = ""
+  preview.classList.add("level-preview")
+  preview.appendChild(level_display)
+  wrapper.appendChild(preview)
+  wrapper.classList.add("shown")
+
+  // Resize preview to fit the display
+  let rect = level_display.getBoundingClientRect()
+  preview.style.width = px(rect.width)
+  preview.style.height = px(rect.height)
+}
+
+function hide_level_preview(wrapper)
+{
+  wrapper.classList.remove("shown")
+}
+
+function open_continue_game_menu(game_state, levels, play_game)
+{
+  close_all_levels_menus()
+  open_menu(CONTINUE_GAME_MENU)
+  let menu = document.getElementById(CONTINUE_GAME_MENU) 
+  let back_button = menu.querySelector(".back-btn")
+  back_button.classList.add("shown")
+  back_button.onclick = _ => { close_continue_game_menu(); open_all_levels_main_menu() }
+
   let preview_wrapper = menu.querySelector(".level-preview-wrapper")
+  preview_wrapper.innerHTML = ""
 
-  let saver = new SaveToCookie(game_state)
-
-  for (let level_number = 1; level_number <= original_levels.length; level_number++)
+  let buttons = menu.querySelector(".menu-buttons")
+  buttons.innerHTML = ""
+  for (let game of game_state.saved_games)
   {
-    let original_level = original_levels[level_number - 1]
-    let button = create_level_button(level_number, original_level)
+    let button = create_game_button(game.name)
 
-    button.onmouseover = _ => {
-      let level = get_current_level_state(original_level.index, game_state, original_levels)
-      draw_preview_on_wrapper(level, preview_wrapper)
-    }
+    button.onmouseover = _ => 
+      show_level_preview(preview_wrapper, draw_level(game.level).element)
     
-    button.onmouseout = _ => {
-      preview_wrapper.style.display = "none"
-    }
+    button.onmouseout = _ =>  hide_level_preview(preview_wrapper)
 
-    button.onclick = () => {
-      hide_all_levels_menu(); 
-      let level_to_play = get_current_level_state(original_level.index, game_state, original_levels)
-      play_at_level(level_to_play, original_level, saver)
+    button.onclick = _ => {
+      play_game(game, game_state, levels)
     }
-
     buttons.appendChild(button)
+
   }
+}
+
+function is_name_free(name, game_state)
+{
+  let unavailable = game_state.saved_games.some(game => game.name == name) ||
+          game_state.ranking.some(entry => entry.name == name)
+
+  return !unavailable
+}
+
+function open_new_game_menu(game_state, levels)
+{
+  close_all_levels_menus()
+  open_menu(NEW_GAME_MENU)
+  let menu = document.getElementById(NEW_GAME_MENU)
+  let button = menu.querySelector("#play-new-game-btn")
+  let name_input = menu.querySelector("#game-name-input")
+  let error = menu.querySelector("#game-name-error")
+  error.innerText = ""
+  name_input.value = ""
+  button.onclick = _ => {
+    let name = name_input.value; 
+    if (name.length == 0)
+    {
+      error.innerText = "Please enter at least one character"
+    }
+    else if (!is_name_free(name, game_state))
+    {
+      error.innerText = "Game with this name already exists"
+    }
+    else
+    { 
+      error.innerText = ""
+      let game = create_new_game(name, levels)
+      play_game(game, game_state, levels)
+    }
+  }
+}
+
+function show_ranking(ranking)
+{
+  open_menu('ranking-wrapper')
+  let close_btn = document.getElementById("close-ranking-btn")
+  close_btn.onclick = _ => close_menu('ranking-wrapper')
+
+  let element = document.createElement("table")
+  document.getElementById("ranking").innerHTML = ""
+  document.getElementById("ranking").appendChild(element)
+
+  if (ranking.length == 0)
+    element.innerHTML += "<tr> *cricket noises* There's no one in the ranking </tr>"
+  else
+  {
+    element.innerHTML =  "<thead><tr> <th>Name</th> <th>Score</th> </tr></thead>"
+    for (let entry of ranking)
+    {
+      let row = document.createElement("tr")
+      row.innerHTML += `<td>${entry.name}</td> <td>${entry.score}</td>`
+      element.appendChild(row)
+    } 
+  }
+
 }

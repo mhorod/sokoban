@@ -1,55 +1,6 @@
 // Sokoban game made for Motorola Science Cup
 // Team: rybka *fish* plum
 
-
-function generate_level_editor_menu(levels)
-{
-  let menu = document.getElementById("level-editor-menu")
-  let buttons = menu.getElementsByClassName("grid-buttons")[0]
-  let preview = menu.querySelector(".level-preview-wrapper")
-  let level_number = 1;
-  let add_new_level_button = menu.querySelector("#add-new-level")
-  add_new_level_button.onclick = _ => {
-    let level = create_new_level()
-    levels.push(level)
-    generate_level_editor_menu(levels)
-  }
-
-  for (let level of levels)
-  {
-    let button = document.createElement("button")
-    button.classList.add("btn")
-    button.textContent = level_number
-    button.onmouseover = _ => {
-      preview.style.display = "block"
-      let p = draw_level(level).element
-      p.classList.add("level-preview")
-      preview.innerHTML = ""
-      preview.appendChild(p)
-    }
-
-    button.onmouseout = _ => {
-      preview.style.display = "none"
-    }
-
-    button.onclick = _ => edit_level(level)
-    level_number += 1
-    buttons.appendChild(button)
-  }
-}
-
-function get_current_level_state(level_index, game_state, original_levels)
-{
-  for (let level of game_state.saved_levels)
-    if (level.index == level_index) 
-      return level;
-  return original_levels[level_index]
-}
-
-Array.prototype.sample = function(){
-  return this[Math.floor(Math.random()*this.length)];
-}
-
 class SatisfactionCounter
 {
   constructor(max_satisfaction) 
@@ -72,8 +23,17 @@ class SatisfactionCounter
   }
 }
 
-function controls_handler(level, display, action, satisfaction_counter, game_saver) 
+function controls_handler(
+    level, 
+    display, 
+    action, 
+    satisfaction_counter, 
+    level_saver,
+    on_complete
+)
 {
+  if (level.completed) return false;
+
   let offset = action_to_offset(action)
   if (!can_move_or_push(level, offset)) return false 
   level.player = move(level.player, offset)
@@ -104,7 +64,14 @@ function controls_handler(level, display, action, satisfaction_counter, game_sav
       satisfaction_counter.add(1)
     }
   }
-  game_saver.save(level)
+  
+  if (is_level_completed(level))
+  {
+    level.completed = true
+    on_complete(level)
+  }
+
+  level_saver.save_level(level)
   return true
 }
 
@@ -116,12 +83,27 @@ function satisfied_boxes_count(level)
   return result
 }
 
-function play_at_level(level, original_level, game_saver)
+
+function play_at_level(
+    level, 
+    original_level, 
+    level_saver, 
+    on_level_completed)
 {
-  hide_all_menus()
+  close_all_menus()
   open_game()
   level = clone_level(level)
   let display = draw_level(level)
+  
+  let on_complete = (level) => {
+    document.getElementById("level-completed-wrapper").classList.add("shown")
+    document.getElementById("level-completed-continue-btn").onclick = _ =>
+    {
+      document.getElementById("level-completed-wrapper").classList.remove("shown")
+        on_level_completed(level)
+    }
+
+  }
 
   document.getElementById("game").innerHTML = ""
   document.getElementById("game").appendChild(display.element)
@@ -129,14 +111,40 @@ function play_at_level(level, original_level, game_saver)
   satisfaction_counter = new SatisfactionCounter(level.boxes.length)
   satisfaction_counter.add(satisfied_boxes_count(level))
 
-  link_controls(action => controls_handler(level, display, action, satisfaction_counter, game_saver))
-  document.getElementById("restart-button").onclick = 
+  link_controls(action => 
+    controls_handler(
+      level, 
+      display,
+      action, 
+      satisfaction_counter, 
+      level_saver,
+      on_complete))
+  
+  document.getElementById("restart-btn").onclick = 
       _ => 
       {
-        game_saver.save(original_level) 
-        play_at_level(original_level, original_level, game_saver)
+        level_saver.save_level(original_level) 
+        play_at_level(
+          original_level, 
+          original_level, 
+          level_saver,
+          on_level_completed)
       }  
 }
+
+function play_game(game, game_state, levels)
+{
+  let game_saver = new SaveToCookie(game, game_state)
+  game_saver.save_game(game)
+  let level = game.level;
+  let on_level_completed = (level) => {
+    let next = level.index + 1
+    if (next < levels.length)
+      play_at_level(levels[next], levels[next], game_saver, on_level_completed)
+  }
+  play_at_level(level, levels[level.index], game_saver, on_level_completed)
+}
+
 
 function create_new_level()
 {
@@ -147,29 +155,10 @@ function create_new_level()
 
 function edit_level(level)
 {
-  hide_all_menus()
+  close_all_menus()
   open_level_editor()
   let level_display = draw_level(level)
   document.getElementById("edited-level-wrapper").innerHTML = ""
   document.getElementById("edited-level-wrapper").appendChild(level_display)
 }
-
-
-link_menu_buttons()
-check_cookies_accepted()
-hide_all_menus()
-open_main_menu()
-
-levels = load_levels_from_string(LEVELS)
-
-levels_by_difficulty = {
-  easy: levels.filter(e => e.difficulty == EASY),
-  medium: levels.filter(e => e.difficulty == MEDIUM),
-  hard: levels.filter(e => e.difficulty == HARD),
-}
-
-game_state = load_game_state()
-generate_difficulty_menu(levels_by_difficulty, play_at_level)
-generate_all_levels_menu(game_state, levels, play_at_level)
-generate_level_editor_menu(game_state.user_levels)
 

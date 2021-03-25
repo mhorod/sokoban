@@ -1,0 +1,85 @@
+/* CSS styles for in-game objects (tiles, player, board)
+ * */
+#game-board {
+    background-color: #eee;
+}
+
+.game-board {
+    position: relative;
+}
+
+.tile {
+    border-width: 0px;
+    border-color: #ddd;
+    border-style: solid;
+    position: absolute;
+    box-sizing: border-box;
+    border-bottom: 20px solid #333 !important;
+}
+
+.tile-floor {
+    background-color: #444;
+}
+
+.tile-wall {
+    border: none;
+}
+
+.tile-target {
+    background-color: #ff6f91;
+    border-bottom: 20px solid #9c5865 !important;
+    transition: all ease 0.5s;
+}
+
+.tile-target.has-box {
+    background-color: #91ff6f;
+    border-bottom: 20px solid #5ec96c !important;
+}
+
+
+
+.player {
+    border-radius: 50%;
+    background-color: #eeeeee;
+    z-index: 1;
+    position: absolute;
+    transition: all 0.2s ease;
+    transform: scale(0.5);
+    -webkit-box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+
+}
+
+.box {
+    border-radius: 4px;
+    position: absolute;
+    z-index: 1;
+    transition: all 0.2s ease;
+    background-color: #55acee;
+    box-sizing: border-box;
+    transform: scale(0.7);
+
+    -webkit-box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
+
+    border-bottom: 8px #3b4856 solid;
+    transition-delay: 0s, 0s, 0.1s, 0.1s;
+    transition-property: left, top, transform, box-shadow;
+}
+
+.box.is-satisfied {
+    transform: scale(0.6);
+}
+
+#satisfaction-counter {
+    transition: all 0.5s ease;
+    font-weight: bold;
+    color: #aaa;
+}
+
+#satisfaction-counter.satisfied {
+    color: #91ff6f;
+}

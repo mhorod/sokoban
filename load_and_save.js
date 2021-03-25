@@ -1,3 +1,5 @@
+// Saving and loading game state (from cookies)
+
 function accept_cookies()
 {
   Cookies.set("cookies-accepted", "true", {sameSite: 'strict', secure:true});
@@ -18,8 +20,8 @@ function reset_game_state()
 function empty_game_state()
 {
   return {
+    saved_games : [],
     user_levels : [],
-    saved_levels : [],
     ranking : [],
   }
 }
@@ -39,19 +41,56 @@ function load_game_state()
 
 class SaveToCookie 
 {
-  constructor(game_state) { this.game_state = game_state }
-  save(level)
+  constructor(game, game_state) { 
+    this.game = game;
+    this.game_state = game_state 
+  }
+
+  save_game(game)
   {
-    for (let i =0 ; i < game_state.saved_levels.length; i++)
-      if (level.index == this.game_state.saved_levels[i].index)
-      {
-        this.game_state.saved_levels.splice(i, 1)
-      }
-    this.game_state.saved_levels.push(level)
+    let index = undefined
+    for (let i = 0 ; i < game_state.saved_games.length; i++)
+      if (game.name == this.game_state.saved_games[i].name)
+        index = i
+
+    if (index == undefined)
+      this.game_state.saved_games.push(game)
+    else
+      this.game_state.saved_games[index] = game
+
     save_game_state(this.game_state)
+  }
+  
+  save_level(level)
+  {
+    this.game.level = level;
+    this.save_game(this.game)
   }
 }
 
-// Dummy saver - used in module 1 (random level by difficulty)
-// where saving is disabled
-class DontSave { save(){} }
+function get_current_level_state(level_index, game_state, original_levels)
+{
+  for (let level of game_state.saved_levels)
+    if (level.index == level_index) 
+      return level;
+  return original_levels[level_index]
+}
+
+function split_levels_by_difficulty(levels)
+{
+  return {
+    easy: levels.filter(e => e.difficulty == EASY),
+    medium: levels.filter(e => e.difficulty == MEDIUM),
+    hard: levels.filter(e => e.difficulty == HARD),
+  }
+}
+
+function create_new_game(name, levels)
+{
+  let game = {
+    name: name,
+    level: levels[0],
+    points: 0,
+  } 
+  return game
+}

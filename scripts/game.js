@@ -1,172 +1,103 @@
-// Sokoban game made for Motorola Science Cup
-// Team: rybka *fish* plum
+// Main game module connecting core logic with HTML UI
 
-class SatisfactionCounter
-{
-  constructor(max_satisfaction) 
-  { 
-    this.satisfaction = 0 
+// Keeps track of how many boxes are on the targets
+// and displays on the proper element
+class SatisfactionCounter {
+  constructor(max_satisfaction) {
+    this.satisfaction = 0
     this.max_satisfaction = max_satisfaction
     this.element = document.getElementById("satisfaction-counter")
     this.update_element()
   }
 
-  add(change) 
-  {
+  add(change) {
     this.satisfaction += change
     this.update_element()
   }
 
-  update_element()
-  {
+  update_element() {
     this.element.innerText = `Satisfied: ${this.satisfaction} / ${this.max_satisfaction}`
   }
 }
 
-function controls_handler(
-    level, 
-    display, 
-    action, 
-    satisfaction_counter, 
-    level_saver,
-    on_complete,
-    restart,
-)
-{
-  if (level.completed) return false;
-
-  if (action == Actions.RESTART) {restart(); return}
-
-  let offset = action_to_offset(action)
-  if (!can_move_or_push(level, offset)) return false 
-  level.moves += 1
-  level.player = move(level.player, offset)
-  move_element_to(display.player, level.player)
-
-  let pushed_box_index = get_box_index(level, level.player)
-  if (pushed_box_index != undefined)
-  {
-    let box = level.boxes[pushed_box_index]
-    let box_display = display.boxes[pushed_box_index]
-    
-    let target_index = get_target_index(level, box)
-    if (target_index != undefined)
-    { 
-      update_target_display(display.targets[target_index], false) 
-      update_box_display(box_display, false)
-      satisfaction_counter.add(-1)
-    }
-
-    box = level.boxes[pushed_box_index] = move(box, offset)
-    move_element_to(box_display, box)
-
-    let new_target_index = get_target_index(level, box)
-    if (new_target_index != undefined)
-    {
-      update_target_display(display.targets[new_target_index], true)
-      update_box_display(box_display, true)
-      satisfaction_counter.add(1)
-    }
-  }
-  
-  if (is_level_completed(level))
-  {
-    level.completed = true
-    on_complete(level)
-  }
-
-  level_saver.save_level(level)
-  return true
-}
-
-function satisfied_boxes_count(level)
-{
-  let result = 0
-  for (let box of level.boxes)
-    if (is_box_satisfied(level, box)) result++
-  return result
+class BasicGameLogic {
+  constructor(game_saver) { this.game_saver = game_saver }
+  save_level(level) { this.game_saver.save_level(level) }
 }
 
 
+// Function used to play a single level
 function play_at_level(
-    level, 
-    original_level, 
-    level_saver, 
-    on_level_completed)
-{
+  level,
+  original_level,
+  level_saver,
+  on_level_completed) {
   close_all_menus()
   open_game()
+  link_back_to_main_menu_button(document.getElementById("game-ui"))
 
-  document.getElementById("main-menu-btn").onclick = _ => {
+  level = clone_level(level)
+  let level_data = { level: level, display: draw_level(level) }
+  place_display(document.getElementById("game"), level_data.display.element)
+  let restart_button = document.getElementById("restart-btn")
+
+  let logic = new BasicGameLogic(level_saver)
+  logic.restart = restart_button.onclick =
+    create_restart_function(original_level, level_saver, on_level_completed)
+  logic.complete = (level) => { show_level_completed(level, on_level_completed) }
+  logic.satisfaction_counter = create_satisfaction_counter(level)
+  link_controls(action => apply_game_action(action, level_data, logic))
+}
+
+function place_display(element, display_element) {
+  element.innerHTML = ""
+  element.appendChild(display_element)
+}
+
+function show_level_completed(level, on_level_completed) {
+  let wrapper = document.getElementById("level-completed-wrapper")
+  wrapper.classList.add("shown")
+  document.getElementById("level-completed-continue-btn").onclick = _ => {
+    wrapper.classList.remove("shown")
+    on_level_completed(level)
+  }
+}
+
+function create_satisfaction_counter(level) {
+  let satisfaction_counter = new SatisfactionCounter(level.boxes.length)
+  satisfaction_counter.add(satisfied_boxes_count(level))
+  return satisfaction_counter
+}
+
+function link_back_to_main_menu_button(game_element) {
+  game_element.querySelector(".back-btn").onclick = _ => {
     unlink_controls()
     back_to_main_menu()
   }
+}
 
-  level = clone_level(level)
-  let display = draw_level(level)
-  
-  let on_complete = (level) => {
-    document.getElementById("level-completed-wrapper").classList.add("shown")
-    document.getElementById("level-completed-continue-btn").onclick = _ =>
-    {
-      document.getElementById("level-completed-wrapper").classList.remove("shown")
-        on_level_completed(level)
-    }
-
+function create_restart_function(
+  original_level,
+  level_saver,
+  on_level_completed) {
+  return _ => {
+    level_saver.save_level(original_level),
+      play_at_level(original_level,
+        original_level,
+        level_saver,
+        on_level_completed)
   }
-
-  document.getElementById("game").innerHTML = ""
-  document.getElementById("game").appendChild(display.element)
-
-  satisfaction_counter = new SatisfactionCounter(level.boxes.length)
-  satisfaction_counter.add(satisfied_boxes_count(level))
-
-  let restart = document.getElementById("restart-btn").onclick = 
-      _ => 
-      {
-        level_saver.save_level(original_level) 
-        play_at_level(
-          original_level, 
-          original_level, 
-          level_saver,
-          on_level_completed)
-      }  
-
-  link_controls(action => 
-    controls_handler(
-      level, 
-      display,
-      action, 
-      satisfaction_counter, 
-      level_saver,
-      on_complete,
-      restart))
-  
 }
 
-function difficulty_bonus(difficulty) 
-{
-  if (difficulty == EASY) return 1;
-  if (difficulty == MEDIUM) return 2;
-  if (difficulty == HARD) return 4;
-}
 
-function level_score(level)
-{
-  if (!level.completed) return 0
-  let score = level.boxes.length * difficulty_bonus(level.difficulty) / level.moves
-  return Math.round(score * 1000)
-}
-
-function play_game(game, game_state, levels)
-{
+function play_game(game, game_state, levels) {
   document.getElementById("finish-game-btn").classList.add("shown")
-  document.getElementById("finish-game-btn").onclick = 
+  document.getElementById("finish-game-btn").onclick =
     _ => finish_game(game, game_state, levels)
   let game_saver = new SaveToCookie(game, game_state)
   game_saver.save_game(game)
   let level = game.level;
-  
+
   let on_level_completed = (level) => {
     game.score += level_score(level)
     let next = level.index + 1
@@ -179,8 +110,7 @@ function play_game(game, game_state, levels)
   play_at_level(level, levels[level.index], game_saver, on_level_completed)
 }
 
-function show_finish_game_modal(game, game_state)
-{
+function show_finish_game_modal(game, game_state) {
   let modal = document.getElementById("game-finished-wrapper")
   open_menu("game-finished-wrapper")
   let score = modal.querySelector("#finished-game-score")
@@ -188,9 +118,9 @@ function show_finish_game_modal(game, game_state)
 
   let continue_button = document.getElementById("game-finished-continue-btn")
   let view_ranking_button = document.getElementById("game-finished-view-ranking-btn")
-  
+
   continue_button.onclick = _ => {
-    back_to_main_menu() 
+    back_to_main_menu()
     close_menu("game-finished-wrapper")
   }
 
@@ -200,38 +130,33 @@ function show_finish_game_modal(game, game_state)
   }
 }
 
-function finish_game(game, game_state, levels)
-{
+function finish_game(game, game_state, levels) {
   unlink_controls()
   back_to_main_menu()
-  let ranking_entry = { 
-      name : game.name,
-      score : game.score,
+  let ranking_entry = {
+    name: game.name,
+    score: game.score,
   }
 
   game_index = game_state.saved_games.indexOf(game)
-  game_state.saved_games.splice(game_index, 1) 
+  game_state.saved_games.splice(game_index, 1)
   game_state.ranking.push(ranking_entry)
-  game_state.ranking.sort((a,b) => a.score < b.score)
+  game_state.ranking.sort((a, b) => a.score < b.score)
   save_game_state(game_state)
-  
+
   generate_all_levels_menu(game_state, levels, play_game)
   show_finish_game_modal(game, game_state)
 }
 
-function create_new_level()
-{
-  let level = new Level();
-  level.width = level.height = 10;
-  return level
+function level_score(level) {
+  if (!level.completed) return 0
+  let score = level.boxes.length * difficulty_bonus(level.difficulty) / level.moves
+  return Math.round(score * 1000)
 }
 
-function edit_level(level)
-{
-  close_all_menus()
-  open_level_editor()
-  let level_display = draw_level(level)
-  document.getElementById("edited-level-wrapper").innerHTML = ""
-  document.getElementById("edited-level-wrapper").appendChild(level_display)
+function difficulty_bonus(difficulty) {
+  if (difficulty == EASY) return 1;
+  if (difficulty == MEDIUM) return 2;
+  if (difficulty == HARD) return 4;
 }
 

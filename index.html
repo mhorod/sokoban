@@ -1,31 +1,25 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet">
-    <script type="module" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.esm.js"></script>
-    <link rel="stylesheet" href="styles/game.css" type="text/css"/>
-    <link rel="stylesheet" href="styles/modal.css" type="text/css"/>
-    <link rel="stylesheet" href="styles/main.css" type="text/css"/>
-    <title>倉庫番</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet">
+  <script type="module" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.esm.js"></script>
+  <link rel="stylesheet" href="styles/game.css" type="text/css" />
+  <link rel="stylesheet" href="styles/modal.css" type="text/css" />
+  <link rel="stylesheet" href="styles/main.css" type="text/css" />
+  <title>倉庫番</title>
 </head>
 
 <body>
-    <main>
-        <h1 id="game-title"> 
-          Sokoban by rybka
-            <ion-icon class="fish" name="fish-outline"></ion-icon>
-            plum
-        </h1>
-
-      <button class='btn' id='main-menu-btn' style="display:none">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-        <span class="text">Back to main menu</span>
-      </button>
+  <main>
+    <h1 id="game-title">
+      Sokoban by rybka
+      <ion-icon class="fish" name="fish-outline"></ion-icon>
+      plum
+    </h1>
 
     <div id="main-menu" class="menu">
       <div class="menu-buttons">
@@ -45,113 +39,144 @@
       </div>
 
     </div>
-    
+
     <div id="random-level-menu" class="menu">
-        <br>
+
+      <button class="btn back-btn">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        Back to previous menu
+      </button>
+
+      <div class="menu-buttons">
+        <button class='btn' id='easy-btn'>
+          <ion-icon class="easy" name="remove-outline"></ion-icon>
+          <span class="text"> Easy </span>
+        </button>
+        <button class='btn' id='medium-btn'>
+          <ion-icon class="medium" name="reorder-two-outline"></ion-icon>
+          <span class="text"> Medium </span>
+        </button>
+        <button class='btn' id='hard-btn'>
+          <ion-icon class="hard" name="reorder-three-outline"></ion-icon>
+          <span class="text"> Hard </span>
+        </button>
+      </div>
+    </div>
+
+    <div id="all-levels-menu" class="menu">
+      <div id="all-levels-main-menu" class="menu">
+
+        <button class="btn back-btn">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Back to previous menu
+        </button>
+
         <div class="menu-buttons">
-          <button class='btn' id='easy-btn'>
-            <ion-icon class="easy" name="remove-outline"></ion-icon>
-            <span class="text"> Easy </span>
+          <button class='btn' id="continue-btn">
+            <ion-icon name="play-outline"></ion-icon>
+            <span class="text"> Continue </span>
           </button>
-          <button class='btn' id='medium-btn'>
-            <ion-icon class="medium" name="reorder-two-outline"></ion-icon>
-            <span class="text"> Medium </span>
+          <button class='btn' id="new-game-btn">
+            <ion-icon name="add-outline"></ion-icon>
+            <span class="text"> New Game </span>
           </button>
-          <button class='btn' id='hard-btn'>
-            <ion-icon class="hard" name="reorder-three-outline"></ion-icon>
-            <span class="text"> Hard </span>
+          <button class='btn' id="ranking-btn">
+            <ion-icon name="podium-outline"></ion-icon>
+            <span class="text"> Ranking </span>
           </button>
         </div>
       </div>
 
-      <div id="all-levels-menu" class="menu" >
+      <div id="new-game-menu" class="menu">
+        <button class='btn back-btn'>
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          <span class="text">Back to previous menu </span>
+        </button>
 
-        <div id="all-levels-main-menu" class="menu">
-          <div class="menu-buttons">
-            <button class='btn' id="continue-btn">
-              <ion-icon name="play-outline"></ion-icon>
-              <span class="text"> Continue </span>
-            </button>
-            <button class='btn' id="new-game-btn">
-              <ion-icon name="add-outline"></ion-icon>
-              <span class="text"> New Game </span>
-            </button>
-            <button class='btn' id="ranking-btn">
-              <ion-icon name="podium-outline"></ion-icon>
-              <span class="text"> Ranking </span>
-            </button>
-          </div>
+        <h2 class="menu-title"> New game </h2>
+
+        <div style="padding: 10px">
+          Enter name: <input type="text" id="game-name-input" style="width:100px" maxlength="10" />
+          <br>
+          <div class="error" id="game-name-error"></div>
         </div>
-        
-        <div id="new-game-menu" class="menu">
-          <button class='btn back-btn' style="display:none">
-            <ion-icon name="arrow-back-outline"></ion-icon>
-            <span class="text">Back to previous menu </span>
+
+        <div class="menu-buttons">
+          <button class='btn' id="play-new-game-btn">
+            <ion-icon name="play-outline"></ion-icon>
+            <span class="text"> Play </span>
           </button>
-          
-          <h2 class="menu-title"> New game </h2>
-
-          <div style="padding: 10px">
-            Enter name: <input type="text" id="game-name-input" style="width:100px" maxlength="10"/>
-            <br>
-            <div class = "error" id="game-name-error"></div>
-          </div>
-
-          <div class="menu-buttons">
-            <button class='btn' id="play-new-game-btn">
-              <ion-icon name="play-outline"></ion-icon>
-              <span class="text"> Play </span>
-            </button>
-          </div>
         </div>
-        
-        <div id="continue-game-menu" class="menu">
-          <h2 class="menu-title"> Saved games </h2>
-          <button class='btn back-btn' style="display:none">
-            <ion-icon name="arrow-back-outline"></ion-icon>
-            <span class="text">Back to previous menu </span>
-          </button>
-
-          <div class="level-preview-wrapper">
-              <div class="level-preview">
-              </div>
-          </div>
-
-          <div class="menu-buttons">
-          </div>
-        </div>
-
-
       </div>
 
-        <div id="ranking-wrapper" class="modal-wrapper">
-            <div id="ranking-modal" class="modal">
-              <button class='btn' id="close-ranking-btn">
-                <ion-icon name="close-outline"></ion-icon>
-               </button>
-        
-                <h2 class="ranking-text">Ranking </h2>
-                <div id ="ranking"></div>
-              </div>
-            </div> 
+      <div id="continue-game-menu" class="menu">
+
+        <button class="btn back-btn">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Back to previous menu
+        </button>
+
+        <h2 class="menu-title"> Saved games </h2>
+        <button class='btn back-btn' style="display:none">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          <span class="text">Back to previous menu </span>
+        </button>
+
+        <div class="level-preview-wrapper">
+          <div class="level-preview">
           </div>
         </div>
 
-      <div id="level-editor-menu" class="menu" style="display:none">
-          <div class="level-preview-wrapper">
-              <div class="level-preview">
-              </div>
-          </div>
-          <div class="grid-buttons">
-              <button class="btn" id="add-new-level">
-                  <ion-icon name="add-outline"></ion-icon>
-              </button>
-          </div>
+        <div class="menu-buttons">
+        </div>
       </div>
+
+
+    </div>
+
+    <div id="ranking-wrapper" class="modal-wrapper">
+      <div id="ranking-modal" class="modal">
+        <button class='btn' id="close-ranking-btn">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+
+        <h2 class="ranking-text">Ranking </h2>
+        <div id="ranking"></div>
+      </div>
+    </div>
+    </div>
+    </div>
+
+    <div id="level-editor-menu" class="menu">
+
+      <div id="level-editor-main-menu" class="menu">
+
+        <button class="btn back-btn">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Back to previous menu
+        </button>
+
+        <h2 class="menu-title"> Level editor </h2>
+        <div class="menu-buttons">
+          <button class='btn' id='level-editor-play-btn'>
+            <ion-icon name="play-outline"></ion-icon>
+            <span class="text"> Play </span>
+          </button>
+          <button class='btn' id='level-editor-edit-btn'>
+            <ion-icon name="build-outline"></ion-icon>
+            <span class="text"> Edit </span>
+          </button>
+        </div>
+      </div>
+    </div>
 
 
     <div id="game-wrapper">
       <div id="game-ui">
+        <button class="btn back-btn">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Back to previous menu
+        </button>
 
         <div id="satisfaction-counter">
         </div>
@@ -159,57 +184,62 @@
         <div id="game">
         </div>
 
-        <span id="controls-text"> 
-          Use arrows, WASD, or HJKL to move around 
+        <span id="controls-text">
+          Use arrows, WASD, or HJKL to move around
           <br>
           Press R to restart
         </span>
         <div class="button-row">
           <button class="btn" id="restart-btn">
-              <ion-icon name="refresh-outline"></ion-icon>
-              <span class="text"> Restart </span>
+            <ion-icon name="refresh-outline"></ion-icon>
+            <span class="text"> Restart </span>
           </button>
           <button class="btn" id="finish-game-btn">
-              <span class="text"> Finish game </span>
+            <span class="text"> Finish game </span>
           </button>
-        </div>      
-      </div>  
-        <div class='modal-wrapper' id="level-completed-wrapper">
-          <div class="modal" id="level-completed-modal">
-            <h2> Level completed </h2>
-            <button class="btn" id="level-completed-continue-btn">
-              Continue
-            </button>
-          </div> 
+        </div>
+      </div>
+      <div class='modal-wrapper' id="level-completed-wrapper">
+        <div class="modal" id="level-completed-modal">
+          <h2> Level completed </h2>
+          <button class="btn" id="level-completed-continue-btn">
+            Continue
+          </button>
         </div>
       </div>
     </div>
-        
-      <div class='modal-wrapper' id="game-finished-wrapper">
-        <div class="modal" id="game-finished-modal">
-          <h3> Game finished </h3>
-          <h4 id="finished-game-score"> </h4>
-          <div class="button-row">
-            <button class="btn" id="game-finished-continue-btn">
-              Continue
-            </button>
-            <button class="btn" id="game-finished-view-ranking-btn">
-              View ranking
-            </button>
-          </div>
-        </div> 
+    </div>
+
+    <div class='modal-wrapper' id="game-finished-wrapper">
+      <div class="modal" id="game-finished-modal">
+        <h3> Game finished </h3>
+        <h4 id="finished-game-score"> </h4>
+        <div class="button-row">
+          <button class="btn" id="game-finished-continue-btn">
+            Continue
+          </button>
+          <button class="btn" id="game-finished-view-ranking-btn">
+            View ranking
+          </button>
+        </div>
       </div>
+    </div>
 
     <div id="level-editor-wrapper">
-      <div id ="level-editor">
+      <div id="level-editor">
+
+        <button class="btn back-btn">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Back to previous menu
+        </button>
 
         <div id="edited-level-wrapper"></div>
         <div class="button-row">
-          <button class="btn active"> 
+          <button class="btn active">
             Place floor
           </button>
-          
-          <button class="btn"> 
+
+          <button class="btn">
             Place wall
           </button>
 
@@ -220,33 +250,33 @@
           <button class="btn">
             Place box
           </button>
-          
+
           <button class="btn">
             Place player
           </button>
 
           <button class="btn" id="save-button">
-              <ion-icon name="save-outline"></ion-icon>
-              <span class="text"> Save </span>
+            <ion-icon name="save-outline"></ion-icon>
+            <span class="text"> Save </span>
           </button>
         </div>
 
         <div id="level-size">
           Level size:
           </br>
-          <input type="text" id="level-width"/> x
-          <input type="text" id="level-height"/>
+          <input type="text" id="level-width" /> x
+          <input type="text" id="level-height" />
         </div>
       </div>
 
     </div>
-    
-    <div id="cookies-popup"> 
+
+    <div id="cookies-popup">
       <span id="cookies-message"> Our game uses cookies to store levels and game state. </span>
       <button class='btn' id="accept-cookies-btn"> Ok </button>
     </div>
-    
-    </main>
+
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
   <script src="scripts/load_and_save.js"> </script>
@@ -256,10 +286,11 @@
   <script src="scripts/level_editor_menu.js"></script>
   <script src="scripts/levels.js"></script>
   <script src="scripts/level.js"></script>
-  <script src="scripts/load_levels.js"></script> 
+  <script src="scripts/load_levels.js"></script>
   <script src="scripts/movement_controls.js"></script>
   <script src="scripts/movement.js"></script>
   <script src="scripts/drawing.js"></script>
+  <script src="scripts/game_logic.js"></script>
   <script src="scripts/game.js"></script>
   <script src="scripts/main.js"></script>
 </body>

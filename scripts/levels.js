@@ -7,8 +7,8 @@
 // AC Easy by Andrej Cerjak
 // Alberto by Alberto Garcia
 
-LEVELS = 
-`   ####
+LEVELS =
+  `   ####
    #  #
    #  #
    #$.#

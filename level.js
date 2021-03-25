@@ -25,6 +25,7 @@ class Level
     this.difficulty = undefined
     this.index = undefined
     this.completed = false
+    this.moves = 0
   }
 }
 
@@ -41,6 +42,7 @@ function clone_level(level)
   obj.difficulty = level.difficulty
   obj.index = level.index
   obj.completed = level.completed
+  obj.moves = level.moves
   return obj
 }
 

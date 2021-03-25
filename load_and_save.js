@@ -89,8 +89,8 @@ function create_new_game(name, levels)
 {
   let game = {
     name: name,
-    level: levels[0],
-    points: 0,
+    level: clone_level(levels[0]),
+    score: 0,
   } 
   return game
 }

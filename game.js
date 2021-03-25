@@ -39,6 +39,7 @@ function controls_handler(
 
   let offset = action_to_offset(action)
   if (!can_move_or_push(level, offset)) return false 
+  level.moves += 1
   level.player = move(level.player, offset)
   move_element_to(display.player, level.player)
 
@@ -137,19 +138,76 @@ function play_at_level(
   
 }
 
+function difficulty_bonus(difficulty) 
+{
+  if (difficulty == EASY) return 1;
+  if (difficulty == MEDIUM) return 2;
+  if (difficulty == HARD) return 4;
+}
+
+function level_score(level)
+{
+  if (!level.completed) return 0
+  let score = level.boxes.length * difficulty_bonus(level.difficulty) / level.moves
+  return Math.round(score * 1000)
+}
+
 function play_game(game, game_state, levels)
 {
+  document.getElementById("finish-game-button").onclick = 
+    _ => finish_game(game, game_state, levels)
   let game_saver = new SaveToCookie(game, game_state)
   game_saver.save_game(game)
   let level = game.level;
+  
   let on_level_completed = (level) => {
+    game.score += level_score(level)
     let next = level.index + 1
     if (next < levels.length)
       play_at_level(levels[next], levels[next], game_saver, on_level_completed)
   }
+
   play_at_level(level, levels[level.index], game_saver, on_level_completed)
 }
 
+function show_finish_game_modal(game, game_state)
+{
+  let modal = document.getElementById("game-finished-wrapper")
+  open_menu("game-finished-wrapper")
+  let score = modal.querySelector("#finished-game-score")
+  score.innerText = `Score: ${game.score}`
+
+  let continue_button = document.getElementById("game-finished-continue-btn")
+  let view_ranking_button = document.getElementById("game-finished-view-ranking-btn")
+  
+  continue_button.onclick = _ => {
+    back_to_main_menu() 
+    close_menu("game-finished-wrapper")
+  }
+
+  view_ranking_button.onclick = _ => {
+    close_menu("game-finished-wrapper")
+    show_ranking(game_state.ranking)
+  }
+}
+
+function finish_game(game, game_state, levels)
+{
+  back_to_main_menu()
+  let ranking_entry = { 
+      name : game.name,
+      score : game.score,
+  }
+
+  game_index = game_state.saved_games.indexOf(game)
+  game_state.saved_games.splice(game_index, 1) 
+  game_state.ranking.push(ranking_entry)
+  game_state.ranking.sort((a,b) => a.score < b.score)
+  save_game_state(game_state)
+  
+  generate_all_levels_menu(game_state, levels, play_game)
+  show_finish_game_modal(game, game_state)
+}
 
 function create_new_level()
 {

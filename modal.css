@@ -34,6 +34,8 @@
   transform: scale(0);
   transition: 0.2s ease transform;
 }
+
+
 .shown > .modal {
   transform: scale(1);
 }
@@ -49,4 +51,11 @@
 #level-completed-wrapper.shown #level-completed-modal 
 {
   transform: scale(1);
+}
+
+#game-finished-modal 
+{ 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

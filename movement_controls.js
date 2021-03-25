@@ -9,6 +9,7 @@ const Actions = {
     MOVE_RIGHT: 1,
     MOVE_UP: 2,
     MOVE_DOWN: 3,
+    RESTART: 4,
 }
 
 function apply_action(handler, action) {
@@ -42,6 +43,8 @@ function link_controls(handler)
           apply_action(handler, Actions.MOVE_UP)
       else if (e.code === "KeyS" || e.code === "KeyJ" || e.code === "ArrowDown")
           apply_action(handler, Actions.MOVE_DOWN)
+      else if (e.code == "KeyR")
+          apply_action(handler, Actions.RESTART)
   }
 
   document.addEventListener("keydown", current_event_listener)

@@ -29,10 +29,13 @@ function controls_handler(
     action, 
     satisfaction_counter, 
     level_saver,
-    on_complete
+    on_complete,
+    restart,
 )
 {
   if (level.completed) return false;
+
+  if (action == Actions.RESTART) {restart(); return}
 
   let offset = action_to_offset(action)
   if (!can_move_or_push(level, offset)) return false 
@@ -111,16 +114,7 @@ function play_at_level(
   satisfaction_counter = new SatisfactionCounter(level.boxes.length)
   satisfaction_counter.add(satisfied_boxes_count(level))
 
-  link_controls(action => 
-    controls_handler(
-      level, 
-      display,
-      action, 
-      satisfaction_counter, 
-      level_saver,
-      on_complete))
-  
-  document.getElementById("restart-btn").onclick = 
+  let restart = document.getElementById("restart-btn").onclick = 
       _ => 
       {
         level_saver.save_level(original_level) 
@@ -130,6 +124,17 @@ function play_at_level(
           level_saver,
           on_level_completed)
       }  
+
+  link_controls(action => 
+    controls_handler(
+      level, 
+      display,
+      action, 
+      satisfaction_counter, 
+      level_saver,
+      on_complete,
+      restart))
+  
 }
 
 function play_game(game, game_state, levels)

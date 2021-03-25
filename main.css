@@ -246,3 +246,5 @@ main {
 
 #continue-btn { display: none; }
 #continue-btn.shown { display: flex; }
+
+#controls-text { text-align: center; }

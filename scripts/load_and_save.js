@@ -10,6 +10,9 @@ function set_cookie(name, value) {
 function get_cookie(name) {
   return Cookies.get(name)
 }
+function remove_cookie(name) {
+  Cookies.remove(name)
+}
 
 function accept_cookies() {
   set_cookie("cookies-accepted", "true")
@@ -22,7 +25,20 @@ function check_cookies_accepted() {
 }
 
 function reset_game_state() {
-  Cookies.remove("game-state")
+  let game_state = load_game_state()
+  for (let game of game_state.saved_games)
+    remove_game_cookie(game)
+
+  for (let user_level of game_state.user_levels)
+    remove_cookie(`user-level: ${user_level.name}`)
+
+  for (let saved_user_level of game_state.saved_user_levels)
+    remove_cookie(`saved-user-level: ${saved_user_level.name}`)
+  remove_cookie('game-state')
+}
+
+function remove_game_cookie(game) {
+  remove_cookie(`saved-game: ${game.name}`)
 }
 
 function empty_game_state() {
@@ -68,7 +84,7 @@ function load_game_state() {
       game_state.user_levels.push(JSON.parse(get_cookie(`user-level: ${user_level_name}`)))
 
     for (let saved_user_level of state.saved_user_levels)
-      game_state.saved_user_levels.push(JSON.parse(get_cookie(`user-level: ${saved_user_level_name}`)))
+      game_state.saved_user_levels.push(JSON.parse(get_cookie(`user-level: ${saved_user_level.name}`)))
 
     return game_state
   }
@@ -143,6 +159,7 @@ function move_game_to_ranking(game, game_state) {
 function remove_saved_game(game, game_state) {
   game_index = game_state.saved_games.indexOf(game)
   game_state.saved_games.splice(game_index, 1)
+  remove_game_cookie(game)
 }
 
 function insert_into_ranking(entry, game_state) {

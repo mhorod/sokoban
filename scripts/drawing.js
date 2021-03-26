@@ -21,17 +21,11 @@ class BasicLevelDisplay {
   }
 
   set_target_has_box(target_index, has_box) {
-    if (has_box)
-      this.targets[target_index].classList.add("has-box")
-    else
-      this.targets[target_index].classList.remove("has-box")
+    set_target_has_box(this.targets[target_index], has_box)
   }
 
   set_box_is_satisfied(box_index, is_satisfied) {
-    if (is_satisfied)
-      this.boxes[box_index].classList.add("is-satisfied")
-    else
-      this.boxes[box_index].classList.remove("is-satisfied")
+    set_box_is_satisfied(this.boxes[box_index])
   }
 
   move_element_to(element, position) {
@@ -125,4 +119,18 @@ function move_element_to(element, position) {
   y *= TILE_SIZE
   element.style.left = px(x)
   element.style.top = px(y)
+}
+
+function set_target_has_box(target, has_box) {
+  if (has_box)
+    target.classList.add("has-box")
+  else
+    target.classList.remove("has-box")
+}
+
+function set_box_is_satisfied(box, is_satisfied) {
+  if (is_satisfied)
+    box.classList.add("is-satisfied")
+  else
+    box.classList.remove("is-satisfied")
 }

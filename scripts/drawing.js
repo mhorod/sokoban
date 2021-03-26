@@ -148,3 +148,9 @@ function play_box_satisfied_sound() {
   let audio = new Audio("sounds/box_satisfied.mp3")
   audio.play()
 }
+
+function play_game_music() {
+}
+
+function stop_game_music() {
+}

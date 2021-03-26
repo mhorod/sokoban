@@ -30,7 +30,7 @@ function generate_all_levels_menu(game_state, levels, play_game) {
   else
     continue_button.classList.add("shown")
 
-  ranking_button.onclick = _ => show_ranking(game_state.ranking)
+  ranking_button.onclick = _ => show_ranking(game_state)
   continue_button.onclick = _ =>
     open_continue_game_menu(game_state, levels, play_game)
   new_game_button.onclick = _ => open_new_game_menu(game_state, levels)
@@ -135,7 +135,8 @@ function open_new_game_menu(game_state, levels) {
   link_new_game_button(new_game_button, game_state, levels)
 }
 
-function show_ranking(ranking) {
+function show_ranking(game_state) {
+  let ranking = game_state.ranking
   show('ranking-wrapper')
   let close_btn = document.getElementById("close-ranking-btn")
   close_btn.onclick = _ => hide('ranking-wrapper')
@@ -147,11 +148,17 @@ function show_ranking(ranking) {
   if (ranking.length == 0)
     element.innerHTML += "<tr> *cricket noises* There's no one in the ranking </tr>"
   else {
-    element.innerHTML = "<thead><tr> <th>Name</th> <th>Score</th> </tr></thead>"
+    element.innerHTML = "<thead><tr> <th>Name</th> <th>Score</th> <th></th></tr> </thead>"
     for (let entry of ranking) {
       let row = document.createElement("tr")
       row.innerHTML += `<td>${entry.name}</td> <td>${entry.score}</td>`
+      row.innerHTML += `<td><button class="btn remove-ranking-entry">Remove</td></td>`
       element.appendChild(row)
+      row.querySelector('.remove-ranking-entry').onclick = _ => {
+        remove_ranking_entry(entry, ranking)
+        show_ranking(game_state)
+        save_game_state(game_state)
+      }
     }
   }
 

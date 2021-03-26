@@ -149,3 +149,11 @@ function insert_into_ranking(entry, game_state) {
   game_state.ranking.push(entry)
   game_state.ranking.sort((a, b) => a.score < b.score)
 }
+
+function remove_ranking_entry(entry, ranking) {
+  let index = undefined
+  for (let i = 0; i < ranking.length; i++)
+    if (ranking[i].name == entry.name)
+      index = i
+  ranking.splice(index, 1)
+}

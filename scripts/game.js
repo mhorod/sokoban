@@ -162,7 +162,7 @@ function show_finish_game_modal(game, game_state) {
 
   view_ranking_button.onclick = _ => {
     hide(GAME_FINISHED)
-    show_ranking(game_state.ranking)
+    show_ranking(game_state)
   }
 }
 

@@ -211,6 +211,7 @@ input[type=text] {
 
 #ranking table {
   width: 400px;
+  table-layout: auto;
 }
 
 #ranking tr {
@@ -219,6 +220,10 @@ input[type=text] {
 
 #ranking tr:nth-child(even) {
   background-color: #333;
+}
+
+#ranking tr td:last-child {
+  width: 1%;
 }
 
 #finish-game-btn {
@@ -253,4 +258,10 @@ input[type=text] {
 
 .shown {
   display: block;
+}
+
+.remove-ranking-entry {
+  font-size: medium;
+  padding: 5px;
+  color: #ee5555;
 }

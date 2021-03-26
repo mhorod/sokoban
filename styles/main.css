@@ -4,6 +4,10 @@ body {
   color: #fff;
 }
 
+* {
+  font-family: 'Montserrat', monospace;
+}
+
 main {
   display: flex;
   flex-direction: column;
@@ -141,6 +145,11 @@ main {
 
 .level {
   position: relative;
+}
+
+input[type=text] {
+  padding: 5px;
+  font-weight: bold;
 }
 
 #game-ui {

@@ -47,10 +47,13 @@ function play_single_level(
   level,
   original_level,
   level_saver,
-  on_level_completed) {
+  on_level_completed,
+  after_level_completed) {
+
+  play_game_music()
   close_all_menus()
   open_game()
-  link_back_to_main_menu_button(document.getElementById("game-ui"))
+  link_back_to_main_menu_button(document.getElementById('game-ui'))
 
   let level_data = { level: clone_level(level), display: draw_level(level) }
   let restart_button = document.getElementById(RESTART_BTN)
@@ -58,23 +61,27 @@ function play_single_level(
   let logic = new BasicGameLogic(level_saver)
   logic.restart = restart_button.onclick =
     create_restart_function(original_level, level_saver, on_level_completed)
-  logic.complete = (level) => { show_level_completed(level, on_level_completed) }
+
+  logic.complete = (level) => {
+    on_level_completed(level)
+    show_level_completed(level, after_level_completed)
+  }
   logic.satisfaction_counter = create_satisfaction_counter(level)
 
-  play_level_at(document.getElementById("game"), level_data, logic)
+  play_level_at(document.getElementById('game'), level_data, logic)
 }
 
 function place_display(element, display_element) {
-  element.innerHTML = ""
+  element.innerHTML = ''
   element.appendChild(display_element)
 }
 
-function show_level_completed(level, on_level_completed) {
-  let wrapper = document.getElementById("level-completed-wrapper")
-  wrapper.classList.add("shown")
-  document.getElementById("level-completed-continue-btn").onclick = _ => {
-    wrapper.classList.remove("shown")
-    on_level_completed(level)
+function show_level_completed(level, after_level_completed) {
+  let wrapper = document.getElementById('level-completed-wrapper')
+  wrapper.classList.add('shown')
+  document.getElementById('level-completed-continue-btn').onclick = _ => {
+    wrapper.classList.remove('shown')
+    after_level_completed(level)
   }
 }
 
@@ -85,7 +92,7 @@ function create_satisfaction_counter(level) {
 }
 
 function link_back_to_main_menu_button(game_element) {
-  game_element.querySelector(".back-btn").onclick = _ => {
+  game_element.querySelector('.back-btn').onclick = _ => {
     unlink_controls()
     hide(GAME_WRAPPER)
     back_to_main_menu()
@@ -95,14 +102,15 @@ function link_back_to_main_menu_button(game_element) {
 function create_restart_function(
   original_level,
   level_saver,
-  on_level_completed) {
+  on_level_completed,
+  after_level_completed) {
   return _ => {
     level_saver.save_level(original_level),
       play_single_level(
         clone_level(original_level),
         original_level,
         level_saver,
-        on_level_completed)
+        on_level_completed, after_level_completed)
   }
 }
 
@@ -122,27 +130,34 @@ function play_game(game, game_state, levels) {
     let next = level.index + 1
     if (next < levels.length) {
       game.level = levels[next]
-      play_game(game, game_state, levels)
+      game_saver.save_game(game)
     }
+    else
+      game_saver.finish_game(game)
+  }
+
+  let after_level_completed = (level) => {
+    if (level.index + 1 < levels.length)
+      play_game(game, game_state, levels)
     else
       finish_game(game, game_state, levels)
   }
 
-  play_single_level(level, levels[level.index], game_saver, on_level_completed)
+  play_single_level(level, levels[level.index], game_saver, on_level_completed, after_level_completed)
 }
 
 // Displays information after finishing the game
 function show_finish_game_modal(game, game_state) {
   show(GAME_FINISHED)
-  let score = document.getElementById("finished-game-score")
+  let score = document.getElementById('finished-game-score')
   score.innerText = `Score: ${game.score}`
 
-  let continue_button = document.getElementById("game-finished-continue-btn")
-  let view_ranking_button = document.getElementById("game-finished-view-ranking-btn")
+  let continue_button = document.getElementById('game-finished-continue-btn')
+  let view_ranking_button = document.getElementById('game-finished-view-ranking-btn')
 
   continue_button.onclick = _ => {
-    back_to_main_menu()
     hide(GAME_FINISHED)
+    back_to_main_menu()
   }
 
   view_ranking_button.onclick = _ => {
@@ -160,41 +175,24 @@ function finish_game(game, game_state, levels) {
   move_game_to_ranking(game, game_state)
   save_game_state(game_state)
   generate_all_levels_menu(game_state, levels, play_game)
-  show_finish_game_modal(game, game_state)
+  show_finish_game_modal(game, game_state, levels)
 }
 
-// Removes game from saved and inserts score into ranking
-function move_game_to_ranking(game, game_state) {
-  let ranking_entry = {
-    name: game.name,
-    score: game.score,
-  }
-  remove_saved_game(game, game_state)
-  insert_into_ranking(ranking_entry, game_state)
-}
-
-function remove_saved_game(game, game_state) {
-  game_index = game_state.saved_games.indexOf(game)
-  game_state.saved_games.splice(game_index, 1)
-}
-
-function insert_into_ranking(entry, game_state) {
-  game_state.ranking.push(entry)
-  game_state.ranking.sort((a, b) => a.score < b.score)
-}
 
 function level_score(level) {
   if (!level.completed) return 0
-  let score = level.boxes.length * difficulty_bonus(level.difficulty) / level.moves
+  let score = level.boxes.length * difficulty_bonus(level.difficulty)
+  score *= score
+  score /= level.moves // penalty for many moves
   return Math.round(score * 1000)
 }
 
 function difficulty_bonus(difficulty) {
   if (difficulty == EASY) return 1;
-  if (difficulty == MEDIUM) return 2;
-  if (difficulty == HARD) return 4;
+  if (difficulty == MEDIUM) return 4;
+  if (difficulty == HARD) return 16;
 }
 
-function open_game() { show("game-wrapper") }
-function close_game() { hide("game-wrapper") }
+function open_game() { show('game-wrapper') }
+function close_game() { hide('game-wrapper') }
 

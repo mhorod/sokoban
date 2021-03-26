@@ -43,12 +43,12 @@ function apply_game_action(action, level_data, logic) {
   if (pushed_box_index != undefined)
     push_box(pushed_box_index, offset, level_data, logic)
 
+  logic.save_level(level)
   if (is_level_completed(level)) {
     level.completed = true
     logic.complete(level)
   }
 
-  logic.save_level(level)
   return true
 }
 

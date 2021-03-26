@@ -17,7 +17,8 @@ function generate_random_level_menu(levels_by_difficulty, play_at_level) {
   let button = menu.querySelector(".back-btn")
   button.onclick = back_to_main_menu
 
-  let on_level_completed = _ => {
+  let on_level_completed = _ => { }
+  let after_level_completed = _ => {
     hide("game-wrapper")
     back_to_main_menu()
   }
@@ -26,19 +27,19 @@ function generate_random_level_menu(levels_by_difficulty, play_at_level) {
   easy.onclick = () => {
     let level = levels_by_difficulty.easy.sample()
     hide("finish-game-btn")
-    play_single_level(level, level, saver, on_level_completed)
+    play_single_level(level, level, saver, on_level_completed, after_level_completed)
   }
 
   medium.onclick = () => {
     let level = levels_by_difficulty.medium.sample()
     hide("finish-game-btn")
-    play_single_level(level, level, saver, on_level_completed)
+    play_single_level(level, level, saver, on_level_completed, after_level_completed)
   }
 
   hard.onclick = () => {
     let level = levels_by_difficulty.hard.sample()
     hide("finish-game-btn")
-    play_single_level(level, level, saver, on_level_completed)
+    play_single_level(level, level, saver, on_level_completed, after_level_completed)
   }
 
 }

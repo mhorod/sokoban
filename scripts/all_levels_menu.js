@@ -37,14 +37,14 @@ function generate_all_levels_menu(game_state, levels, play_game) {
 }
 
 function close_all_levels_menus() {
-  close_menu(ALL_LEVELS_MAIN_MENU)
-  close_menu(CONTINUE_GAME_MENU)
-  close_menu(NEW_GAME_MENU)
+  hide(ALL_LEVELS_MAIN_MENU)
+  hide(CONTINUE_GAME_MENU)
+  hide(NEW_GAME_MENU)
 }
 
 function open_all_levels_main_menu() {
   close_all_levels_menus()
-  open_menu(ALL_LEVELS_MAIN_MENU)
+  show(ALL_LEVELS_MAIN_MENU)
 }
 
 function show_level_preview(wrapper, level_display) {
@@ -67,7 +67,7 @@ function hide_level_preview(wrapper) {
 
 function open_continue_game_menu(game_state, levels, play_game) {
   close_all_levels_menus()
-  open_menu(CONTINUE_GAME_MENU)
+  show(CONTINUE_GAME_MENU)
   let menu = document.getElementById(CONTINUE_GAME_MENU)
 
   let back_button = menu.querySelector(".back-btn")
@@ -97,24 +97,16 @@ function open_continue_game_menu(game_state, levels, play_game) {
 function is_name_free(name, game_state) {
   let unavailable = game_state.saved_games.some(game => game.name == name) ||
     game_state.ranking.some(entry => entry.name == name)
-
   return !unavailable
 }
 
-function open_new_game_menu(game_state, levels) {
-  close_all_levels_menus()
-  open_menu(NEW_GAME_MENU)
-  let menu = document.getElementById(NEW_GAME_MENU)
-
-  let back_button = menu.querySelector(".back-btn")
-  back_button.onclick = open_all_levels_main_menu
-
-  let button = menu.querySelector("#play-new-game-btn")
-  let name_input = menu.querySelector("#game-name-input")
-  let error = menu.querySelector("#game-name-error")
+function link_new_game_button(element, game_state, levels) {
+  let error = document.getElementById("game-name-error")
+  let name_input = document.getElementById("game-name-input")
   error.innerText = ""
   name_input.value = ""
-  button.onclick = _ => {
+
+  element.onclick = _ => {
     let name = name_input.value;
     if (name.length == 0) {
       error.innerText = "Please enter at least one character"
@@ -131,10 +123,22 @@ function open_new_game_menu(game_state, levels) {
   }
 }
 
+function open_new_game_menu(game_state, levels) {
+  close_all_levels_menus()
+  show(NEW_GAME_MENU)
+  let menu = document.getElementById(NEW_GAME_MENU)
+
+  let back_button = menu.querySelector(".back-btn")
+  back_button.onclick = open_all_levels_main_menu
+
+  let new_game_button = document.getElementById("play-new-game-btn")
+  link_new_game_button(new_game_button, game_state, levels)
+}
+
 function show_ranking(ranking) {
-  open_menu('ranking-wrapper')
+  show('ranking-wrapper')
   let close_btn = document.getElementById("close-ranking-btn")
-  close_btn.onclick = _ => close_menu('ranking-wrapper')
+  close_btn.onclick = _ => hide('ranking-wrapper')
 
   let element = document.createElement("table")
   document.getElementById("ranking").innerHTML = ""

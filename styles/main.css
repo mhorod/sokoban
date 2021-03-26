@@ -147,11 +147,7 @@ main {
   padding: 10px;
 }
 
-#game-wrapper {
-  display: none;
-}
-
-#level-editor-wrapper {
+.hidden {
   display: none;
 }
 

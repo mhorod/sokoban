@@ -19,6 +19,7 @@ function generate_random_level_menu(levels_by_difficulty, play_at_level) {
 
   document.getElementById("finish-game-btn").classList.remove("shown")
   let on_level_completed = _ => {
+    hide("game-wrapper")
     back_to_main_menu()
   }
 

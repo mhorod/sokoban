@@ -1,12 +1,19 @@
 // Main game module connecting core logic with HTML UI
 
+GAME_FINISHED = 'game-finished-wrapper'
+FINISH_GAME_BTN = 'finish-game-btn'
+SATISFACTION_COUNTER = 'satisfaction-counter'
+RESTART_BTN = 'restart-btn'
+GAME_WRAPPER = 'game-wrapper'
+GAME = 'game'
+
 // Keeps track of how many boxes are on the targets
 // and displays on the proper element
 class SatisfactionCounter {
   constructor(max_satisfaction) {
     this.satisfaction = 0
     this.max_satisfaction = max_satisfaction
-    this.element = document.getElementById("satisfaction-counter")
+    this.element = document.getElementById(SATISFACTION_COUNTER)
     this.update_element()
   }
 
@@ -39,7 +46,7 @@ function play_at_level(
   level = clone_level(level)
   let level_data = { level: level, display: draw_level(level) }
   place_display(document.getElementById("game"), level_data.display.element)
-  let restart_button = document.getElementById("restart-btn")
+  let restart_button = document.getElementById(RESTART_BTN)
 
   let logic = new BasicGameLogic(level_saver)
   logic.restart = restart_button.onclick =
@@ -72,6 +79,7 @@ function create_satisfaction_counter(level) {
 function link_back_to_main_menu_button(game_element) {
   game_element.querySelector(".back-btn").onclick = _ => {
     unlink_controls()
+    hide(GAME_WRAPPER)
     back_to_main_menu()
   }
 }
@@ -90,10 +98,12 @@ function create_restart_function(
 }
 
 
+// Play (continue) game - all levels sorted from easy to hard
 function play_game(game, game_state, levels) {
-  document.getElementById("finish-game-btn").classList.add("shown")
-  document.getElementById("finish-game-btn").onclick =
+  show(FINISH_GAME_BTN)
+  document.getElementById(FINISH_GAME_BTN).onclick =
     _ => finish_game(game, game_state, levels)
+
   let game_saver = new SaveToCookie(game, game_state)
   game_saver.save_game(game)
   let level = game.level;
@@ -110,10 +120,10 @@ function play_game(game, game_state, levels) {
   play_at_level(level, levels[level.index], game_saver, on_level_completed)
 }
 
+// Displays information after finishing the game
 function show_finish_game_modal(game, game_state) {
-  let modal = document.getElementById("game-finished-wrapper")
-  open_menu("game-finished-wrapper")
-  let score = modal.querySelector("#finished-game-score")
+  show(GAME_FINISHED)
+  let score = document.getElementById("finished-game-score")
   score.innerText = `Score: ${game.score}`
 
   let continue_button = document.getElementById("game-finished-continue-btn")
@@ -121,31 +131,45 @@ function show_finish_game_modal(game, game_state) {
 
   continue_button.onclick = _ => {
     back_to_main_menu()
-    close_menu("game-finished-wrapper")
+    hide(GAME_FINISHED)
   }
 
   view_ranking_button.onclick = _ => {
-    close_menu("game-finished-wrapper")
+    hide(GAME_FINISHED)
     show_ranking(game_state.ranking)
   }
 }
 
+// Finishes game, it can be caused either by user
+// or when all levels are completed
 function finish_game(game, game_state, levels) {
   unlink_controls()
+  close_game()
   back_to_main_menu()
+  move_game_to_ranking(game, game_state)
+  save_game_state(game_state)
+  generate_all_levels_menu(game_state, levels, play_game)
+  show_finish_game_modal(game, game_state)
+}
+
+// Removes game from saved and inserts score into ranking
+function move_game_to_ranking(game, game_state) {
   let ranking_entry = {
     name: game.name,
     score: game.score,
   }
+  remove_saved_game(game, game_state)
+  insert_into_ranking(ranking_entry, game_state)
+}
 
+function remove_saved_game(game, game_state) {
   game_index = game_state.saved_games.indexOf(game)
   game_state.saved_games.splice(game_index, 1)
-  game_state.ranking.push(ranking_entry)
-  game_state.ranking.sort((a, b) => a.score < b.score)
-  save_game_state(game_state)
+}
 
-  generate_all_levels_menu(game_state, levels, play_game)
-  show_finish_game_modal(game, game_state)
+function insert_into_ranking(entry, game_state) {
+  game_state.ranking.push(entry)
+  game_state.ranking.sort((a, b) => a.score < b.score)
 }
 
 function level_score(level) {
@@ -159,4 +183,7 @@ function difficulty_bonus(difficulty) {
   if (difficulty == MEDIUM) return 2;
   if (difficulty == HARD) return 4;
 }
+
+function open_game() { show("game-wrapper") }
+function close_game() { hide("game-wrapper") }
 

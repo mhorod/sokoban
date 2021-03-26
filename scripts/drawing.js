@@ -78,8 +78,8 @@ function draw_level(level) {
   for (let [x, y] of level.boxes) {
     let box = new_box_at(x, y)
     if (is_box_satisfied(level, [x, y])) {
-      update_target_display(tiles[x][y], true)
-      update_box_display(box, true)
+      set_target_has_box(tiles[x][y], true)
+      set_box_is_satisfied(box, true)
     }
     element.appendChild(box)
     boxes.push(box)
@@ -116,22 +116,7 @@ function new_player_at(x, y) {
 function size_and_position_element(element, x, y) {
   element.style.width = px(TILE_SIZE)
   element.style.height = px(TILE_SIZE)
-  element.style.left = px(x * TILE_SIZE)
-  element.style.top = px(y * TILE_SIZE)
-}
-
-function update_target_display(element, has_box) {
-  if (has_box)
-    element.classList.add("has-box")
-  else
-    element.classList.remove("has-box")
-}
-
-function update_box_display(element, is_satisfied) {
-  if (is_satisfied)
-    element.classList.add("is-satisfied")
-  else
-    element.classList.remove("is-satisfied")
+  move_element_to(element, [x, y])
 }
 
 function move_element_to(element, position) {

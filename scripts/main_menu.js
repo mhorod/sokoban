@@ -1,3 +1,5 @@
+// Handles main menu and switching to sub-menus
+
 MAIN_MENU = 'main-menu'
 RANDOM_LEVEL_MENU = 'random-level-menu'
 ALL_LEVELS_MENU = 'all-levels-menu'
@@ -21,62 +23,56 @@ function back_to_main_menu() {
 }
 
 function close_all_menus() {
-  close_game()
   close_main_menu()
   close_random_level_menu()
   close_all_levels_menu()
   close_level_editor_menu()
 }
 
-function close_game() {
-  document.getElementById("game-wrapper").style.display = "none"
-}
-
-function open_game() {
-  document.getElementById("game-wrapper").style.display = "block"
-}
-
-function open_menu(id) {
+function show(id) {
   document.getElementById(id).classList.add("shown")
+  document.getElementById(id).classList.remove("hidden")
 }
 
-function close_menu(id) {
+function hide(id) {
+  document.getElementById(id).classList.add("hidden")
   document.getElementById(id).classList.remove("shown")
 }
 
+
 function open_main_menu() {
-  open_menu(MAIN_MENU)
+  show(MAIN_MENU)
 }
 
 function close_main_menu() {
-  close_menu(MAIN_MENU)
+  hide(MAIN_MENU)
 }
 
 function open_random_level_menu() {
   close_main_menu()
-  open_menu(RANDOM_LEVEL_MENU)
+  show(RANDOM_LEVEL_MENU)
 }
 
 function close_random_level_menu() {
-  close_menu(RANDOM_LEVEL_MENU)
+  hide(RANDOM_LEVEL_MENU)
 }
 
 function open_all_levels_menu() {
   close_main_menu()
-  open_menu(ALL_LEVELS_MENU)
+  show(ALL_LEVELS_MENU)
   open_all_levels_main_menu()
 }
 
 function close_all_levels_menu() {
-  close_menu(ALL_LEVELS_MENU)
+  hide(ALL_LEVELS_MENU)
 }
 
 function open_level_editor_menu() {
   close_main_menu()
-  open_menu(LEVEL_EDITOR_MENU)
+  show(LEVEL_EDITOR_MENU)
   open_level_editor_main_menu()
 }
 
 function close_level_editor_menu() {
-  close_menu(LEVEL_EDITOR_MENU)
+  hide(LEVEL_EDITOR_MENU)
 }

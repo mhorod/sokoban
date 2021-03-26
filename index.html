@@ -21,6 +21,7 @@
       plum
     </h1>
 
+    <!-- Main menu -->
     <div id="main-menu" class="menu">
       <div class="menu-buttons">
         <button class='btn' id='play-random-btn'>
@@ -40,8 +41,8 @@
 
     </div>
 
+    <!-- Module 1 menu - random level -->
     <div id="random-level-menu" class="menu">
-
       <button class="btn back-btn">
         <ion-icon name="arrow-back-outline"></ion-icon>
         Back to previous menu
@@ -63,9 +64,11 @@
       </div>
     </div>
 
+    <!-- Module 2 menu - all levels -->
     <div id="all-levels-menu" class="menu">
-      <div id="all-levels-main-menu" class="menu">
 
+      <!-- Module 2 main menu -->
+      <div id="all-levels-main-menu" class="menu">
         <button class="btn back-btn">
           <ion-icon name="arrow-back-outline"></ion-icon>
           Back to previous menu
@@ -87,6 +90,7 @@
         </div>
       </div>
 
+      <!-- New game menu -->
       <div id="new-game-menu" class="menu">
         <button class='btn back-btn'>
           <ion-icon name="arrow-back-outline"></ion-icon>
@@ -109,8 +113,8 @@
         </div>
       </div>
 
+      <!-- Continue game menu -->
       <div id="continue-game-menu" class="menu">
-
         <button class="btn back-btn">
           <ion-icon name="arrow-back-outline"></ion-icon>
           Back to previous menu
@@ -132,10 +136,9 @@
         <div class="menu-buttons">
         </div>
       </div>
+    </div> <!-- End of Module 2 menu -->
 
-
-    </div>
-
+    <!-- Ranking -->
     <div id="ranking-wrapper" class="modal-wrapper">
       <div id="ranking-modal" class="modal">
         <button class='btn' id="close-ranking-btn">
@@ -146,13 +149,12 @@
         <div id="ranking"></div>
       </div>
     </div>
-    </div>
-    </div>
 
+
+    <!-- Module 3 menu - level editor -->
     <div id="level-editor-menu" class="menu">
 
       <div id="level-editor-main-menu" class="menu">
-
         <button class="btn back-btn">
           <ion-icon name="arrow-back-outline"></ion-icon>
           Back to previous menu
@@ -170,10 +172,12 @@
           </button>
         </div>
       </div>
-    </div>
+
+    </div> <!-- End of Module 3 menu -->
 
 
-    <div id="game-wrapper">
+    <!-- Game -->
+    <div id="game-wrapper" class="hidden">
       <div id="game-ui">
         <button class="btn back-btn">
           <ion-icon name="arrow-back-outline"></ion-icon>
@@ -209,9 +213,9 @@
           </button>
         </div>
       </div>
-    </div>
-    </div>
+    </div> <!-- End of game -->
 
+    <!-- Game finished modal -->
     <div class='modal-wrapper' id="game-finished-wrapper">
       <div class="modal" id="game-finished-modal">
         <h3> Game finished </h3>
@@ -227,7 +231,8 @@
       </div>
     </div>
 
-    <div id="level-editor-wrapper">
+    <!-- Level editor -->
+    <div id="level-editor-wrapper" class="hidden">
       <div id="level-editor">
 
         <button class="btn back-btn">
@@ -281,18 +286,27 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
-  <script src="scripts/load_and_save.js"> </script>
-  <script src="scripts/all_levels_menu.js"></script>
-  <script src="scripts/menu.js"></script>
+
+  <!-- Menus -->
+  <script src="scripts/main_menu.js"></script>
   <script src="scripts/random_level_menu.js"></script>
+  <script src="scripts/all_levels_menu.js"></script>
   <script src="scripts/level_editor_menu.js"></script>
+
+  <!-- Levels -->
   <script src="scripts/levels.js"></script>
   <script src="scripts/level.js"></script>
   <script src="scripts/load_levels.js"></script>
-  <script src="scripts/movement_controls.js"></script>
+  <script src="scripts/load_and_save.js"> </script>
+
+  <!-- Logic -->
   <script src="scripts/movement.js"></script>
-  <script src="scripts/drawing.js"></script>
   <script src="scripts/game_logic.js"></script>
+
+  <!-- Interactor -->
+  <script src="scripts/movement_controls.js"></script>
+  <script src="scripts/drawing.js"></script>
   <script src="scripts/game.js"></script>
+
   <script src="scripts/main.js"></script>
 </body>

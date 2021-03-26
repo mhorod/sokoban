@@ -1,3 +1,5 @@
+// Conversion from string representation to level 
+
 WALL = "#"
 TARGET = "."
 BOX = "$"
@@ -45,6 +47,8 @@ function contains_array(array, value) {
   return array.some(x => array_equals(x, value))
 }
 
+// Leave only tiles that player can reach (if boxes were removed)
+// Set unreachable tiles to walls
 function remove_unreachable(level) {
   let visited = []
   let q = []

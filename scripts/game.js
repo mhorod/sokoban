@@ -32,9 +32,18 @@ class BasicGameLogic {
   save_level(level) { this.game_saver.save_level(level) }
 }
 
+// Draws level on the element and allows playing
+function play_level_at(
+  element,
+  level_data,
+  logic,
+) {
+  place_display(element, level_data.display.element)
+  link_controls(action => apply_game_action(action, level_data, logic))
+}
 
 // Function used to play a single level
-function play_at_level(
+function play_single_level(
   level,
   original_level,
   level_saver,
@@ -43,9 +52,7 @@ function play_at_level(
   open_game()
   link_back_to_main_menu_button(document.getElementById("game-ui"))
 
-  level = clone_level(level)
-  let level_data = { level: level, display: draw_level(level) }
-  place_display(document.getElementById("game"), level_data.display.element)
+  let level_data = { level: clone_level(level), display: draw_level(level) }
   let restart_button = document.getElementById(RESTART_BTN)
 
   let logic = new BasicGameLogic(level_saver)
@@ -53,7 +60,8 @@ function play_at_level(
     create_restart_function(original_level, level_saver, on_level_completed)
   logic.complete = (level) => { show_level_completed(level, on_level_completed) }
   logic.satisfaction_counter = create_satisfaction_counter(level)
-  link_controls(action => apply_game_action(action, level_data, logic))
+
+  play_level_at(document.getElementById("game"), level_data, logic)
 }
 
 function place_display(element, display_element) {
@@ -90,7 +98,8 @@ function create_restart_function(
   on_level_completed) {
   return _ => {
     level_saver.save_level(original_level),
-      play_at_level(original_level,
+      play_single_level(
+        clone_level(original_level),
         original_level,
         level_saver,
         on_level_completed)
@@ -111,13 +120,15 @@ function play_game(game, game_state, levels) {
   let on_level_completed = (level) => {
     game.score += level_score(level)
     let next = level.index + 1
-    if (next < levels.length)
-      play_at_level(levels[next], levels[next], game_saver, on_level_completed)
+    if (next < levels.length) {
+      game.level = levels[next]
+      play_game(game, game_state, levels)
+    }
     else
       finish_game(game, game_state, levels)
   }
 
-  play_at_level(level, levels[level.index], game_saver, on_level_completed)
+  play_single_level(level, levels[level.index], game_saver, on_level_completed)
 }
 
 // Displays information after finishing the game

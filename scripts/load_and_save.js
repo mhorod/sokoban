@@ -23,6 +23,7 @@ function empty_game_state() {
   return {
     saved_games: [],
     user_levels: [],
+    saved_user_levels: [],
     ranking: [],
   }
 }

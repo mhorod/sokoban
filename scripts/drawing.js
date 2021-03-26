@@ -18,6 +18,7 @@ class BasicLevelDisplay {
 
   move_box_to(box_index, position) {
     this.move_element_to(this.boxes[box_index], position)
+    play_move_box_sound()
   }
 
   set_target_has_box(target_index, has_box) {
@@ -25,7 +26,9 @@ class BasicLevelDisplay {
   }
 
   set_box_is_satisfied(box_index, is_satisfied) {
-    set_box_is_satisfied(this.boxes[box_index])
+    set_box_is_satisfied(this.boxes[box_index], is_satisfied)
+    if (is_satisfied)
+      play_box_satisfied_sound()
   }
 
   move_element_to(element, position) {
@@ -38,11 +41,12 @@ class BasicLevelDisplay {
 }
 
 
-
 function draw_level(level) {
   let element = document.createElement("div")
   element.classList.add("level")
-  if (level.width == 0 || level.height == 0) return element
+  if (level.width == 0 || level.height == 0)
+    return new BasicLevelDisplay(element)
+
   let tiles = new Array(level.width)
   element.style.width = px(level.width * TILE_SIZE)
   element.style.height = px(level.height * TILE_SIZE + TILE_SIZE / 2)
@@ -133,4 +137,14 @@ function set_box_is_satisfied(box, is_satisfied) {
     box.classList.add("is-satisfied")
   else
     box.classList.remove("is-satisfied")
+}
+
+function play_move_box_sound() {
+  let audio = new Audio("sounds/move_box.mp3")
+  audio.play()
+}
+
+function play_box_satisfied_sound() {
+  let audio = new Audio("sounds/box_satisfied.mp3")
+  audio.play()
 }

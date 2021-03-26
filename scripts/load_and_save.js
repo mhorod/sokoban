@@ -3,7 +3,6 @@
 // Set a cookie that expires in 10 years
 function set_cookie(name, value) {
   Cookies.set(name, value, { sameSite: 'strict', expires: 10 * 365 })
-  console.log(name, value)
 }
 
 function accept_cookies() {

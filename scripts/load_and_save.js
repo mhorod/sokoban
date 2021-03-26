@@ -1,7 +1,13 @@
 // Saving and loading game state (from cookies)
 
+// Set a cookie that expires in 10 years
+function set_cookie(name, value) {
+  Cookies.set(name, value, { sameSite: 'strict', expires: 10 * 365 })
+  console.log(name, value)
+}
+
 function accept_cookies() {
-  Cookies.set("cookies-accepted", "true", { sameSite: 'strict', secure: true });
+  set_cookie("cookies-accepted", "true")
   check_cookies_accepted()
 }
 
@@ -23,13 +29,13 @@ function empty_game_state() {
 }
 
 function save_game_state(game_state) {
-  let cookieValue = JSON.stringify(game_state)
-  Cookies.set("game-state", cookieValue, { sameSite: 'strict', secure: true });
+  let cookie_value = JSON.stringify(game_state)
+  set_cookie("game-state", cookie_value)
 }
 
 function load_game_state() {
-  let cookieValue = Cookies.get("game-state")
-  if (cookieValue != undefined) return JSON.parse(cookieValue)
+  let cookie_value = Cookies.get("game-state")
+  if (cookie_value != undefined) return JSON.parse(cookie_value)
   return empty_game_state()
 }
 

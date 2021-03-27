@@ -173,6 +173,7 @@ function validate_level_or_show_error(level) {
 
 function show_level_editor_error(innerHTML) {
   let error = document.getElementById('edited-level-error')
+  error.innerHTML = innerHTML
   show('edited-level-error')
   hide('saved-edited-level')
 }

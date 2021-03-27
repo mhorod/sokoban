@@ -7,8 +7,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap" rel="stylesheet">
   <script type="module" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.esm.js"></script>
-  <link rel="stylesheet" href="styles/game.css" type="text/css" />
+  <link rel="stylesheet" href="styles/level.css" type="text/css" />
   <link rel="stylesheet" href="styles/modal.css" type="text/css" />
+  <link rel="stylesheet" href="styles/menu.css" type="text/css" />
   <link rel="stylesheet" href="styles/main.css" type="text/css" />
   <link rel="shortuct icon" href="favicon.png" />
   <title>倉庫番</title>
@@ -30,8 +31,8 @@
           <span class="text"> Random level </span>
         </button>
         <button class='btn' id='play-all-levels-btn'>
-          <ion-icon name="apps-outline"></ion-icon>
-          <span class="text"> All levels </span>
+          <ion-icon name="game-controller-outline"></ion-icon>
+          <span class="text"> Full game </span>
         </button>
 
         <button class='btn' id='level-editor-btn'>
@@ -171,6 +172,10 @@
             <ion-icon name="build-outline"></ion-icon>
             <span class="text"> Edit </span>
           </button>
+          <button id="add-new-level-btn" class="btn">
+            <ion-icon name="add-outline"></ion-icon>
+            <span class="text">Add new level</span>
+          </button>
         </div>
       </div>
 
@@ -180,11 +185,30 @@
           Back to previous menu
         </button>
 
-        <h2 class="menu-title"> Saved levels </h2>
+        <h2 class="menu-title"> Play saved levels </h2>
         <button class='btn back-btn' style="display:none">
           <ion-icon name="arrow-back-outline"></ion-icon>
           <span class="text">Back to previous menu </span>
         </button>
+
+        <div class="level-preview-outer-wrapper">
+          <div class="level-preview-wrapper">
+            <div class="level-preview">
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-buttons">
+        </div>
+      </div>
+
+      <div id="level-editor-edit-menu" class="menu">
+        <button class="btn back-btn">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Back to previous menu
+        </button>
+
+        <h2 class="menu-title"> Edit saved levels </h2>
 
         <div class="level-preview-outer-wrapper">
           <div class="level-preview-wrapper">
@@ -204,40 +228,24 @@
 
     <!-- Game -->
     <div id="game-wrapper" class="hidden">
-      <div id="game-ui">
-        <button class="btn back-btn">
-          <ion-icon name="arrow-back-outline"></ion-icon>
-          Back to main menu
-        </button>
+      <button class="btn back-btn">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        Back to main menu
+      </button>
+      <div class="level-ui-wrapper">
 
-        <div id="satisfaction-counter">
-        </div>
-
-        <div id="game">
-        </div>
-
-        <span id="controls-text">
-          Use arrows, WASD, or HJKL to move around
-          <br>
-          Press R to restart
-        </span>
-        <div class="button-row">
-          <button class="btn" id="restart-btn">
-            <ion-icon name="refresh-outline"></ion-icon>
-            <span class="text"> Restart </span>
-          </button>
-          <button class="btn hidden" id="finish-game-btn">
-            <span class="text"> Finish game </span>
-          </button>
-        </div>
       </div>
-      <div class='modal-wrapper' id="level-completed-wrapper">
-        <div class="modal" id="level-completed-modal">
-          <h2> Level completed </h2>
-          <button class="btn" id="level-completed-continue-btn">
-            Continue
-          </button>
-        </div>
+      <button class="btn warning" id="finish-game-btn">
+        Finish game
+      </button>
+    </div>
+
+    <div class='modal-wrapper' id="level-completed-wrapper">
+      <div class="modal" id="level-completed-modal">
+        <h2> Level completed </h2>
+        <button class="btn" id="level-completed-continue-btn">
+          Continue
+        </button>
       </div>
     </div> <!-- End of game -->
 
@@ -246,6 +254,7 @@
       <div class="modal" id="game-finished-modal">
         <h3> Game finished </h3>
         <h4 id="finished-game-score"> </h4>
+        <h5> Your game was finished and saved in ranking </h5>
         <div class="button-row">
           <button class="btn" id="game-finished-continue-btn">
             Continue
@@ -259,47 +268,77 @@
 
     <!-- Level editor -->
     <div id="level-editor-wrapper" class="hidden">
-      <div id="level-editor">
+      <div id="edited-level-play" class="menu">
+        <button class="btn back-btn">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Back to editing
+        </button>
 
+        <h2 class="menu-title"> Edit Level </h2>
+        <div class="level-ui-wrapper"></div>
+      </div>
+
+      <div id="level-editor">
         <button class="btn back-btn">
           <ion-icon name="arrow-back-outline"></ion-icon>
           Back to previous menu
         </button>
 
-        <div id="edited-level-wrapper"></div>
-        <div class="button-row">
-          <button class="btn active">
-            Place floor
-          </button>
+        <h2 class="menu-title"> Edit Level </h2>
 
-          <button class="btn">
-            Place wall
-          </button>
+        <div class="error" id="edited-level-error"> </div>
+        <div class="success" id="saved-edited-level"> Saved level </div>
 
-          <button class="btn">
-            Place target
-          </button>
-
-          <button class="btn">
-            Place box
-          </button>
-
-          <button class="btn">
-            Place player
-          </button>
-
-          <button class="btn" id="save-button">
-            <ion-icon name="save-outline"></ion-icon>
-            <span class="text"> Save </span>
-          </button>
+        <div style="padding: 10px">
+          Level name: <input type="text" id="level-name-input" style="width:100px" maxlength="10" />
         </div>
-
         <div id="level-size">
           Level size:
-          </br>
-          <input type="text" id="level-width" /> x
-          <input type="text" id="level-height" />
+          <input type="text" id="level-width" maxlength="2" /> x
+          <input type="text" id="level-height" maxlength="2" />
+          <button class="btn" id="resize-level-btn"> Resize </button>
         </div>
+
+
+        <div id="edited-level-wrapper"></div>
+
+        <div class="button-row" id="mode-buttons">
+          <button class="btn active" id="place-btn"> Place </button>
+          <button class="btn" id="erase-btn"> Erase </button>
+        </div>
+        <div class="button-row" id="element-buttons">
+          <button class="btn active" id="floor-btn">
+            Floor
+          </button>
+
+          <button class="btn" id="target-btn">
+            Target
+          </button>
+
+          <button class="btn" id="box-btn">
+            Box
+          </button>
+
+          <button class="btn" id="player-btn">
+            Player
+          </button>
+
+        </div>
+        <div class="button-row">
+          <button class="btn" id="play-edited-level-btn">
+            <ion-icon name="play-outline"></ion-icon>
+            <span class="text"> Play </span>
+          </button>
+          <button class="btn" id="save-level-btn">
+            <ion-icon name="save-outline"></ion-icon>
+            <span class="text"> Save level </span>
+          </button>
+          <button class="btn warning" id="remove-level-btn">
+            <ion-icon name="trash-outline"></ion-icon>
+            <span class="text"> Remove level </span>
+          </button>
+        </div>
+
       </div>
 
     </div>
@@ -310,6 +349,7 @@
     </div>
 
   </main>
+
 
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
 
@@ -326,12 +366,13 @@
   <script src="scripts/load_and_save.js"> </script>
 
   <!-- Logic -->
-  <script src="scripts/movement.js"></script>
   <script src="scripts/game_logic.js"></script>
 
   <!-- Interactor -->
   <script src="scripts/movement_controls.js"></script>
   <script src="scripts/drawing.js"></script>
+  <script src="scripts/level_editor.js"></script>
+  <script src="scripts/game_state.js"></script>
   <script src="scripts/game.js"></script>
 
   <script src="scripts/main.js"></script>

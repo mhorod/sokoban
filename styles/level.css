@@ -1,11 +1,8 @@
-/* CSS styles for in-game objects (tiles, player, board) */
+/* Style of level interface */
 
-#game-board {
-    background-color: #eee;
-}
-
-.game-board {
+.level {
     position: relative;
+    transform-origin: top left;
 }
 
 .tile {
@@ -22,7 +19,7 @@
 }
 
 .tile-wall {
-    border: none;
+    opacity: 0%;
 }
 
 .tile-target {
@@ -47,6 +44,7 @@
     -moz-box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
     box-shadow: 0px 5px 2px 0px rgba(0, 0, 0, 0.5);
     box-sizing: border-box;
+    pointer-events: none;
 }
 
 .box {
@@ -63,19 +61,59 @@
     border-bottom: 8px #3b4856 solid;
     transition-delay: 0s, 0s, 0.1s, 0.1s;
     transition-property: left, top, transform, box-shadow;
+    pointer-events: none;
 }
 
 .box.is-satisfied {
     transform: scale(0.6);
 }
 
-#satisfaction-counter {
+.satisfaction-counter {
     transition: all 0.5s ease;
     font-weight: bold;
     color: #aaa;
     padding: 10px;
 }
 
-#satisfaction-counter.satisfied {
+.satisfaction-counter.satisfied {
     color: #91ff6f;
+}
+
+.level-ui-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.level-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.level-wrapper {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    padding: 20px;
+}
+
+.controls-text {
+    text-align: center;
+}
+
+#edited-level-wrapper {
+    border: 2px solid #eee;
+}
+
+/* Lighten tile in editing mode */
+
+#edited-level-wrapper .tile:hover {
+    filter: brightness(130%);
+    cursor: pointer;
+}
+
+#edited-level-wrapper .tile-wall:hover {
+    opacity: 40%;
 }

@@ -1,8 +1,9 @@
 // Core game logic
 
-// Note: Those two below classes are meant only to clarify used interface
+/**
+ * @typedef {{level: Level, display: LevelDisplay}} LevelData
+ */
 
-// Level interface used by game
 class LevelDisplay {
   move_player_to(position) { }
   move_box_to(box_index, position) { }
@@ -17,14 +18,38 @@ class GameLogic {
   save_level(level) { }
 }
 
-// Applies provided action using provided interface
-// action - any of Action defined in movement_control
-// level_data :
-//    level - in-game level representation 
-//    display - display implementing LevelDisplay methods
-// logic - game logic implementing GameLogic methods 
-// 
-// returns true if action was applied and false if it failed
+/**
+ * Actions handled by game
+ */
+const Actions = {
+  MOVE_LEFT: 0,
+  MOVE_RIGHT: 1,
+  MOVE_UP: 2,
+  MOVE_DOWN: 3,
+  RESTART: 4,
+}
+
+/** Converts action to coordinate offset
+ * 
+ * @param {any} action 
+ * @return {[number, number]}
+ */
+function action_to_offset(action) {
+  switch (action) {
+    case Actions.MOVE_LEFT: return [-1, 0]
+    case Actions.MOVE_RIGHT: return [1, 0]
+    case Actions.MOVE_UP: return [0, -1]
+    case Actions.MOVE_DOWN: return [0, 1]
+  }
+}
+
+/**
+ * Applies provided action using provided interface
+ * @param {any} action Action to apply, any of Actions member
+ * @param {LevelData} level_data 
+ * @param {GameLogic} logic 
+ * @return {boolean} true if action was applied false otherwise
+ */
 function apply_game_action(action, level_data, logic) {
   let level = level_data.level
   let display = level_data.display
@@ -43,15 +68,23 @@ function apply_game_action(action, level_data, logic) {
   if (pushed_box_index != undefined)
     push_box(pushed_box_index, offset, level_data, logic)
 
-  logic.save_level(level)
   if (is_level_completed(level)) {
     level.completed = true
-    logic.complete(level)
   }
 
+  logic.save_level(level)
+  if (level.completed)
+    logic.complete(level)
   return true
 }
 
+/** Pushes box by offset
+ * 
+ * @param {number} box_index 
+ * @param {[number, number]} offset 
+ * @param {LevelData} level_data 
+ * @param {GameLogic} logic 
+ */
 function push_box(box_index, offset, level_data, logic) {
   let box = level_data.level.boxes[box_index]
   move_box_from(box_index, box, level_data, logic)
@@ -60,6 +93,13 @@ function push_box(box_index, offset, level_data, logic) {
   move_box_to(box_index, box, level_data, logic)
 }
 
+/** Removes box from a tile
+ * 
+ * @param {number} box_index 
+ * @param {[number, number]} offset 
+ * @param {LevelData} level_data 
+ * @param {GameLogic} logic 
+ */
 function move_box_from(box_index, position, level_data, logic) {
   let target_index = get_target_index(level_data.level, position)
   if (target_index != undefined) {
@@ -69,6 +109,13 @@ function move_box_from(box_index, position, level_data, logic) {
   }
 }
 
+/** Puts box on a tile
+ * 
+ * @param {number} box_index 
+ * @param {[number, number]} offset 
+ * @param {LevelData} level_data 
+ * @param {GameLogic} logic 
+ */
 function move_box_to(box_index, position, level_data, logic) {
   let target_index = get_target_index(level_data.level, position)
   if (target_index != undefined) {

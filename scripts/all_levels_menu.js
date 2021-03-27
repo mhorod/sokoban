@@ -7,10 +7,10 @@ ALL_LEVELS_MAIN_MENU = 'all-levels-main-menu'
 CONTINUE_GAME_MENU = 'continue-game-menu'
 NEW_GAME_MENU = 'new-game-menu'
 
-function create_game_button(game_name) {
+function create_button(text) {
   let button = document.createElement("button")
   button.classList.add("btn")
-  button.textContent = game_name
+  button.textContent = text
   return button
 }
 
@@ -79,7 +79,7 @@ function open_continue_game_menu(game_state, levels, play_game) {
   let buttons = menu.querySelector(".menu-buttons")
   buttons.innerHTML = ""
   for (let game of game_state.saved_games) {
-    let button = create_game_button(game.name)
+    let button = create_button(game.name)
 
     button.onmouseover = _ =>
       show_level_preview(preview_wrapper, draw_level(game.level).element)
@@ -116,7 +116,7 @@ function link_new_game_button(element, game_state, levels) {
     }
     else {
       error.innerText = ""
-      let game = create_new_game(name, levels)
+      let game = new Game(name, levels[0])
       play_game(game, game_state, levels)
       generate_all_levels_menu(game_state, levels, play_game)
     }

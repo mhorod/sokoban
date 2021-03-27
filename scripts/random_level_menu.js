@@ -2,7 +2,7 @@
 //  - level is randomly selected based on chosen difficulty
 //  - dummy saver is used hence game is not saved
 
-class DontSave { save_level() { } }
+class DontSave { save_level(_) { } }
 
 Array.prototype.sample = function () {
   return this[Math.floor(Math.random() * this.length)];
@@ -26,20 +26,17 @@ function generate_random_level_menu(levels_by_difficulty, play_at_level) {
   let saver = new DontSave()
   easy.onclick = () => {
     let level = levels_by_difficulty.easy.sample()
-    hide("finish-game-btn")
-    play_single_level(level, level, saver, on_level_completed, after_level_completed)
+    play_level_on_default_game_wrapper(level, level, saver, on_level_completed, after_level_completed)
   }
 
   medium.onclick = () => {
     let level = levels_by_difficulty.medium.sample()
-    hide("finish-game-btn")
-    play_single_level(level, level, saver, on_level_completed, after_level_completed)
+    play_level_on_default_game_wrapper(level, level, saver, on_level_completed, after_level_completed)
   }
 
   hard.onclick = () => {
     let level = levels_by_difficulty.hard.sample()
-    hide("finish-game-btn")
-    play_single_level(level, level, saver, on_level_completed, after_level_completed)
+    play_level_on_default_game_wrapper(level, level, saver, on_level_completed, after_level_completed)
   }
 
 }

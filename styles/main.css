@@ -1,3 +1,5 @@
+/* Style of game interface */
+
 body {
   background-color: #222;
   font-family: 'Montserrat', monospace;
@@ -24,101 +26,6 @@ main {
   color: #55acee;
 }
 
-.btn {
-  border: none;
-  padding: 10px;
-  background-color: #222;
-  font-size: larger;
-  color: #eee;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  outline: none;
-}
-
-.btn:hover {
-  background-color: #2a2a2a;
-  color: #55acee;
-}
-
-.btn.active {
-  border-width: 2px;
-  border-style: solid;
-  border-color: #91ff6f;
-}
-
-.menu-title {
-  text-align: center;
-}
-
-.menu {
-  margin-top: 10px;
-  display: none;
-}
-
-.menu.shown {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.menu>.menu-buttons, .grid-buttons {
-  border: 2px solid #eee;
-  border-radius: 5px;
-}
-
-.menu-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.back-btn {
-  margin-bottom: 20px;
-}
-
-.menu-buttons>button {
-  display: flex;
-  justify-content: between;
-  width: 250px;
-  padding: 12px;
-}
-
-.menu-buttons>button>.text {
-  flex-grow: 1;
-  text-align: center;
-}
-
-#game-ui {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-#game {
-  display: flex;
-  justify-content: center;
-  position: relative;
-  padding: 20px;
-}
-
-.easy {
-  color: #55ee62;
-}
-
-.medium {
-  color: #eed355;
-}
-
-.hard {
-  color: #ee5555;
-}
-
-.grid-buttons {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-}
-
 .level-preview-wrapper {
   display: none;
   position: relative;
@@ -138,13 +45,9 @@ main {
   border: 2px solid #eee;
 }
 
-.level-preview .level {
+.level-preview .level-outer {
   transform: scale(0.5);
   transform-origin: top left;
-}
-
-.level {
-  position: relative;
 }
 
 input[type=text] {
@@ -152,18 +55,26 @@ input[type=text] {
   font-weight: bold;
 }
 
-#game-ui {
-  padding: 10px;
+.hidden {
+  display: none !important;
 }
 
-.hidden {
-  display: none;
+#game-wrapper {
+  flex-direction: column;
+  align-items: center;
+}
+
+#game-wrapper.shown {
+  display: flex;
 }
 
 #level-editor {
-  display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+#level-editor.shown {
+  display: flex;
 }
 
 #edited-level-wrapper {
@@ -226,17 +137,16 @@ input[type=text] {
   width: 1%;
 }
 
-#finish-game-btn {
-  display: none;
-}
-
-#finish-game-btn.shown {
-  display: block;
-}
-
 .error {
   color: #ee5555;
   font-weight: bold;
+  text-align: center;
+}
+
+.success {
+  color: #55ee62;
+  font-weight: bold;
+  text-align: center;
 }
 
 #game-name-error {
@@ -264,4 +174,17 @@ input[type=text] {
   font-size: medium;
   padding: 5px;
   color: #ee5555;
+}
+
+.warning {
+  color: #ee5555;
+}
+
+#edited-level-wrapper {
+  margin: 20px;
+}
+
+#level-size {
+  display: flex;
+  align-items: center;
 }

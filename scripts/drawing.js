@@ -3,6 +3,10 @@
 TILE_SIZE = 40
 function px(n) { return String(n) + "px" }
 
+
+/**
+ * Represents a level that is displayed to the user
+ */
 class BasicLevelDisplay {
 
   constructor(element, player, targets, boxes) {
@@ -41,28 +45,46 @@ class BasicLevelDisplay {
 }
 
 
-function draw_level(level) {
+/**
+ * Draws level using HTML 
+ * @param {Level} level 
+ * @param {function} on_tile_click 
+ */
+function draw_level(level, on_tile_click) {
+  let outer_element = document.createElement("div")
   let element = document.createElement("div")
+  outer_element.appendChild(element)
+
+  let scale = 1
+  if (level.width >= 10 || level.height >= 10) {
+    scale = 1 + (10 - Math.max(level.width, level.height)) / 40
+    element.style.transform = `scale(${Math.round(100 * scale)}%)`
+  }
+
+
   element.classList.add("level")
+  outer_element.classList.add("level-outer")
   if (level.width == 0 || level.height == 0)
-    return new BasicLevelDisplay(element)
+    return new BasicLevelDisplay(outer_element)
 
   let tiles = new Array(level.width)
-  element.style.width = px(level.width * TILE_SIZE)
-  element.style.height = px(level.height * TILE_SIZE + TILE_SIZE / 2)
+  element.style.width = px((level.width * TILE_SIZE) * scale)
+  element.style.height = px((level.height * TILE_SIZE + TILE_SIZE / 2) * scale)
 
   for (let x = 0; x < level.width; x++) {
     tiles[x] = new Array(level.height)
     for (let y = 0; y < level.height; y++) {
       let tile = new_empty_tile_at(x, y)
       tile.classList.add("tile-floor")
+      if (on_tile_click != undefined)
+        tile.onclick = _ => on_tile_click([x, y])
       tiles[x][y] = tile
       element.appendChild(tile)
     }
   }
 
   for (let [x, y] of level.walls) {
-    tiles[x][y].remove()
+    tiles[x][y].classList.add('tile-wall')
   }
 
   let targets = []
@@ -83,10 +105,13 @@ function draw_level(level) {
     boxes.push(box)
   }
 
-  let player = new_player_at(level.player[0], level.player[1])
-  element.appendChild(player)
+  let player = undefined
+  if (level.player != undefined) {
+    player = new_player_at(level.player[0], level.player[1])
+    element.appendChild(player)
+  }
 
-  return new BasicLevelDisplay(element, player, targets, boxes)
+  return new BasicLevelDisplay(outer_element, player, targets, boxes)
 }
 
 function new_empty_tile_at(x, y) {

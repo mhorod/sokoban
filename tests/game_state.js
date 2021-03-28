@@ -21,7 +21,7 @@ function test_game_state() {
 
 function ranking_is_sorted_descending_after_entry_insertions() {
   let ranking = []
-  entries = [{ score: 123 }, { score: 200 }, { score: 50 }, { score: 150 }]
+  let entries = [{ score: 123 }, { score: 200 }, { score: 50 }, { score: 150 }]
   for (let entry of entries)
     insert_into_ranking(entry, ranking)
 
@@ -37,7 +37,7 @@ function ranking_is_sorted_descending_after_entry_insertions() {
 
 function ranking_is_sorted_descending_after_entry_removals() {
   let ranking = []
-  entries = [{ score: 123 }, { score: 200 }, { score: 50 }, { score: 150 }]
+  let entries = [{ score: 123 }, { score: 200 }, { score: 50 }, { score: 150 }]
   for (let entry of entries)
     insert_into_ranking(entry, ranking)
 

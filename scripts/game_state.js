@@ -115,7 +115,7 @@ function get_saved_game_index_by_name(name, game_state) {
  */
 function insert_into_ranking(entry, ranking) {
   ranking.push(entry)
-  ranking.sort((a, b) => a.score < b.score)
+  ranking = ranking.sort((a, b) => a.score < b.score ? 1 : -1)
 }
 
 /**

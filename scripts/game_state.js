@@ -1,10 +1,6 @@
 // Game state and manipulation of it
 
 /**
- * @typedef {Object} Level
- */
-
-/**
  * Represents a complete game state used by game
  */
 class GameState {
@@ -31,6 +27,15 @@ class Game {
     this.score = 0
   }
 }
+/** Creates independent clone of the game
+ * 
+ * @param {Game} game 
+ */
+function clone_game(game) {
+  let obj = new Game(game.name, clone_level(game.level))
+  obj.score = game.score
+  return obj
+}
 
 class RankingEntry {
   /**
@@ -44,26 +49,6 @@ class RankingEntry {
   }
 }
 
-/**
- * 
- * @param {number} level_index 
- * @param {GameState} game_state 
- * @param {Level[]} original_levels 
- * @return {Level}
- */
-function get_current_level_state(level_index, game_state, original_levels) {
-  for (let level of game_state.saved_levels)
-    if (level.index == level_index)
-      return level;
-  return original_levels[level_index]
-}
-
-/**
- * @typedef {Object} LevelsByDiffcutly Split of levels by their set difficulty
- * @property {Level[]} easy
- * @property {Level[]} medium
- * @property {Level[]} hard
- */
 
 /** 
  * Splits level by set difficulty.
@@ -91,14 +76,36 @@ function move_game_to_ranking(game, game_state) {
   insert_into_ranking(ranking_entry, game_state.ranking)
 }
 
+/** Saves game into game_state
+ * 
+ * @param {Game} game 
+ * @param {GameState} game_state 
+ */
+function save_game(game, game_state) {
+  game = clone_game(game)
+
+  let index = get_saved_game_index_by_name(game.name, game_state)
+  if (index == undefined)
+    game_state.saved_games.push(game)
+  else
+    game_state.saved_games[index] = game
+}
+
 /**
  * Removes given game from game state if present
  * @param {Game} game 
  * @param {GameState} game_state 
  */
 function remove_saved_game(game, game_state) {
-  game_index = game_state.saved_games.indexOf(game)
-  game_state.saved_games.splice(game_index, 1)
+  game_index = get_saved_game_index_by_name(game.name, game_state)
+  if (game_index != undefined)
+    game_state.saved_games.splice(game_index, 1)
+}
+
+function get_saved_game_index_by_name(name, game_state) {
+  for (let i = 0; i < game_state.saved_games.length; i++)
+    if (name == game_state.saved_games[i].name)
+      return i
 }
 
 /**
@@ -116,11 +123,60 @@ function insert_into_ranking(entry, ranking) {
  * @param {RankingEntry} entry 
  * @param {RankingEntry[]} ranking 
  */
-function remove_ranking_entry(entry, ranking) {
+function remove_from_ranking(entry, ranking) {
   let index = ranking.indexOf(entry)
   ranking.splice(index, 1)
 }
 
+
+/** Saves level created by user and sets its paused state
+ * 
+ * @param {Level} level 
+ * @param {GameState} game_state 
+ */
+function save_user_level(level, game_state) {
+  if (level.index == undefined)
+    save_new_user_level(level, game_state)
+  else {
+    for (let i = 0; i < game_state.user_levels.length; i++)
+      if (game_state.user_levels[i].index == level.index)
+        game_state.user_levels[i] = clone_level(level)
+    save_paused_user_level(level, game_state)
+  }
+}
+
+/** Saves paused level created by user
+ * 
+ * @param {Level} level 
+ * @param {GameState} game_state 
+ */
+function save_paused_user_level(level, game_state) {
+  level = clone_level(level)
+  for (let i = 0; i < game_state.paused_user_levels.length; i++)
+    if (game_state.paused_user_levels[i].index == level.index)
+      game_state.paused_user_levels[i] = level
+}
+
+/** Creates new level in game_state 
+ *  Sets provided level index  
+ * 
+ * @param {Level} level 
+ * @param {GameState} game_state 
+ */
+function save_new_user_level(level, game_state) {
+  level.index = game_state.next_user_level_index
+  level = clone_level(level)
+  game_state.next_user_level_index += 1
+  game_state.user_levels.push(level)
+  game_state.paused_user_levels.push(level)
+}
+
+/** Removes level from levels created by user
+ * and from paused levels
+ * 
+ * @param {Level} level 
+ * @param {GameState} game_state 
+ */
 function remove_user_level(level, game_state) {
   let index = undefined
   for (let i = 0; i < game_state.user_levels.length; i++)
@@ -133,6 +189,11 @@ function remove_user_level(level, game_state) {
   remove_paused_user_level(level, game_state)
 }
 
+/** Removes level from paused levels created by user
+ * 
+ * @param {Level} level 
+ * @param {GameState} game_state 
+ */
 function remove_paused_user_level(level, game_state) {
   let index = undefined
   for (let i = 0; i < game_state.paused_user_levels.length; i++)
@@ -141,35 +202,6 @@ function remove_paused_user_level(level, game_state) {
 
   if (index != undefined)
     game_state.paused_user_levels.splice(index, 1)
-}
-
-function save_user_level(level, game_state) {
-  if (level.index == undefined)
-    save_new_user_level(level, game_state)
-  else {
-    for (let i = 0; i < game_state.user_levels.length; i++)
-      if (game_state.user_levels[i].index == level.index)
-        game_state.user_levels[i] = clone_level(level)
-    save_paused_user_level(level, game_state)
-  }
-}
-
-function save_paused_user_level(level, game_state) {
-  for (let i = 0; i < game_state.paused_user_levels.length; i++)
-    if (game_state.paused_user_levels[i].index == level.index)
-      game_state.paused_user_levels[i] = clone_level(level)
-}
-
-/** Creates new level in game_state 
- * 
- * @param {Level} level 
- * @param {GameState} game_state 
- */
-function save_new_user_level(level, game_state) {
-  level.index = game_state.next_user_level_index
-  game_state.next_user_level_index += 1
-  game_state.user_levels.push(clone_level(level))
-  game_state.paused_user_levels.push(clone_level(level))
 }
 
 /** Returns user level by given index.
@@ -185,16 +217,17 @@ function get_user_level_by_index(index, game_state) {
 }
 
 /** Returns user level by given name
- *  Level is presented in the state it was saved in editor.
+ *  Level is presented in the state it was saved in editor,
  *  IOW, as it was never played on
  * @param {string} name 
  * @param {GameState} game_state 
  */
 function get_user_level_by_name(name, game_state) {
   for (let level of game_state.user_levels)
-    if (level.name = name)
+    if (level.name == name)
       return level
 }
+
 
 class BasicGameSaver {
   constructor(game, game_state) {
@@ -203,21 +236,12 @@ class BasicGameSaver {
   }
 
   save_game(game) {
-    let index = undefined
-    for (let i = 0; i < game_state.saved_games.length; i++)
-      if (game.name == this.game_state.saved_games[i].name)
-        index = i
-
-    if (index == undefined)
-      this.game_state.saved_games.push(game)
-    else
-      this.game_state.saved_games[index] = game
-
+    save_game(game, this.game_state)
     save_game_state(this.game_state)
   }
 
   save_level(level) {
-    this.game.level = level;
+    this.game.level = level
     this.save_game(this.game)
   }
 

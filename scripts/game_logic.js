@@ -4,6 +4,11 @@
  * @typedef {{level: Level, display: LevelDisplay}} LevelData
  */
 
+// Note: Two below classes are meant only to provide used interface
+
+/**
+ * Display interface used by game
+ */
 class LevelDisplay {
   move_player_to(position) { }
   move_box_to(box_index, position) { }
@@ -11,8 +16,11 @@ class LevelDisplay {
   set_box_is_satisfied(box_index, is_satisfied) { }
 }
 
-// Logic interface used by game
+/**
+ * Logic interface used by game
+ */
 class GameLogic {
+  constructor() { this.satisfaction_counter = undefined }
   restart() { }
   complete(level) { }
   save_level(level) { }
@@ -31,8 +39,8 @@ const Actions = {
 
 /** Converts action to coordinate offset
  * 
- * @param {any} action 
- * @return {[number, number]}
+ * @param {number} action 
+ * @return {number[]}
  */
 function action_to_offset(action) {
   switch (action) {
@@ -45,7 +53,7 @@ function action_to_offset(action) {
 
 /**
  * Applies provided action using provided interface
- * @param {any} action Action to apply, any of Actions member
+ * @param {number} action Action to apply, any of Actions member
  * @param {LevelData} level_data 
  * @param {GameLogic} logic 
  * @return {boolean} true if action was applied false otherwise
@@ -81,7 +89,7 @@ function apply_game_action(action, level_data, logic) {
 /** Pushes box by offset
  * 
  * @param {number} box_index 
- * @param {[number, number]} offset 
+ * @param {number[]} offset 
  * @param {LevelData} level_data 
  * @param {GameLogic} logic 
  */
@@ -96,7 +104,7 @@ function push_box(box_index, offset, level_data, logic) {
 /** Removes box from a tile
  * 
  * @param {number} box_index 
- * @param {[number, number]} offset 
+ * @param {number[]} offset 
  * @param {LevelData} level_data 
  * @param {GameLogic} logic 
  */
@@ -112,7 +120,7 @@ function move_box_from(box_index, position, level_data, logic) {
 /** Puts box on a tile
  * 
  * @param {number} box_index 
- * @param {[number, number]} offset 
+ * @param {number[]} offset 
  * @param {LevelData} level_data 
  * @param {GameLogic} logic 
  */

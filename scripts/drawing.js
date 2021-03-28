@@ -163,19 +163,3 @@ function set_box_is_satisfied(box, is_satisfied) {
   else
     box.classList.remove("is-satisfied")
 }
-
-function play_move_box_sound() {
-  let audio = new Audio("sounds/move_box.mp3")
-  audio.play()
-}
-
-function play_box_satisfied_sound() {
-  let audio = new Audio("sounds/box_satisfied.mp3")
-  audio.play()
-}
-
-function play_game_music() {
-}
-
-function stop_game_music() {
-}

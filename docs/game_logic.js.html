@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: game_logic.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: game_logic.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Core game logic
+
+/**
+ * @typedef {{level: Level, display: LevelDisplay}} LevelData
+ */
+
+// Note: Two below classes are meant only to provide used interface
+
+/**
+ * Display interface used by game
+ */
+class LevelDisplay {
+  move_player_to(position) { }
+  move_box_to(box_index, position) { }
+  set_target_has_box(target_index, has_box) { }
+  set_box_is_satisfied(box_index, is_satisfied) { }
+}
+
+/**
+ * Logic interface used by game
+ */
+class GameLogic {
+  constructor() { this.satisfaction_counter = undefined }
+  restart() { }
+  complete(level) { }
+  save_level(level) { }
+}
+
+/**
+ * Actions handled by game
+ */
+const Actions = {
+  MOVE_LEFT: 0,
+  MOVE_RIGHT: 1,
+  MOVE_UP: 2,
+  MOVE_DOWN: 3,
+  RESTART: 4,
+}
+
+/** Converts action to coordinate offset
+ * 
+ * @param {number} action 
+ * @return {number[]}
+ */
+function action_to_offset(action) {
+  switch (action) {
+    case Actions.MOVE_LEFT: return [-1, 0]
+    case Actions.MOVE_RIGHT: return [1, 0]
+    case Actions.MOVE_UP: return [0, -1]
+    case Actions.MOVE_DOWN: return [0, 1]
+  }
+}
+
+/**
+ * Applies provided action using provided interface
+ * @param {number} action Action to apply, any of Actions member
+ * @param {LevelData} level_data 
+ * @param {GameLogic} logic 
+ * @return {boolean} true if action was applied false otherwise
+ */
+function apply_game_action(action, level_data, logic) {
+  let level = level_data.level
+  let display = level_data.display
+
+  if (level.completed) return false
+  if (action == Actions.RESTART) { logic.restart(); return false }
+
+  let offset = action_to_offset(action)
+  if (!can_move_or_push(level, offset)) return false
+
+  level.moves += 1
+  level.player = move(level.player, offset)
+  display.move_player_to(level.player)
+
+  let pushed_box_index = get_box_index(level, level.player)
+  if (pushed_box_index != undefined)
+    push_box(pushed_box_index, offset, level_data, logic)
+
+  if (is_level_completed(level)) {
+    level.completed = true
+  }
+
+  logic.save_level(level)
+  if (level.completed)
+    logic.complete(level)
+  return true
+}
+
+/** Pushes box by offset
+ * 
+ * @param {number} box_index 
+ * @param {number[]} offset 
+ * @param {LevelData} level_data 
+ * @param {GameLogic} logic 
+ */
+function push_box(box_index, offset, level_data, logic) {
+  let box = level_data.level.boxes[box_index]
+  move_box_from(box_index, box, level_data, logic)
+  box = level_data.level.boxes[box_index] = move(box, offset)
+  level_data.display.move_box_to(box_index, box)
+  move_box_to(box_index, box, level_data, logic)
+}
+
+/** Removes box from a tile
+ * 
+ * @param {number} box_index 
+ * @param {number[]} offset 
+ * @param {LevelData} level_data 
+ * @param {GameLogic} logic 
+ */
+function move_box_from(box_index, position, level_data, logic) {
+  let target_index = get_target_index(level_data.level, position)
+  if (target_index != undefined) {
+    level_data.display.set_target_has_box(target_index, false)
+    level_data.display.set_box_is_satisfied(box_index, false)
+    logic.satisfaction_counter.add(-1)
+  }
+}
+
+/** Puts box on a tile
+ * 
+ * @param {number} box_index 
+ * @param {number[]} offset 
+ * @param {LevelData} level_data 
+ * @param {GameLogic} logic 
+ */
+function move_box_to(box_index, position, level_data, logic) {
+  let target_index = get_target_index(level_data.level, position)
+  if (target_index != undefined) {
+    level_data.display.set_target_has_box(target_index, true)
+    level_data.display.set_box_is_satisfied(box_index, true)
+    logic.satisfaction_counter.add(1)
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BasicLevelDisplay.html">BasicLevelDisplay</a></li><li><a href="Game.html">Game</a></li><li><a href="GameLogic.html">GameLogic</a></li><li><a href="GameState.html">GameState</a></li><li><a href="Level.html">Level</a></li><li><a href="LevelDisplay.html">LevelDisplay</a></li><li><a href="LoadFromCookie.html">LoadFromCookie</a></li><li><a href="RankingEntry.html">RankingEntry</a></li><li><a href="SatisfactionCounter.html">SatisfactionCounter</a></li><li><a href="SaveToCookie.html">SaveToCookie</a></li></ul><h3>Global</h3><ul><li><a href="global.html#accept_cookies">accept_cookies</a></li><li><a href="global.html#action_to_offset">action_to_offset</a></li><li><a href="global.html#Actions">Actions</a></li><li><a href="global.html#add_finish_button_to_level_game_wrapper">add_finish_button_to_level_game_wrapper</a></li><li><a href="global.html#apply_action">apply_action</a></li><li><a href="global.html#apply_edition">apply_edition</a></li><li><a href="global.html#apply_game_action">apply_game_action</a></li><li><a href="global.html#arrays_equal">arrays_equal</a></li><li><a href="global.html#can_move_or_push">can_move_or_push</a></li><li><a href="global.html#can_push_box">can_push_box</a></li><li><a href="global.html#can_walk_into_without_pushing">can_walk_into_without_pushing</a></li><li><a href="global.html#check_cookies_accepted">check_cookies_accepted</a></li><li><a href="global.html#clone_game">clone_game</a></li><li><a href="global.html#clone_level">clone_level</a></li><li><a href="global.html#create_level_ui">create_level_ui</a></li><li><a href="global.html#create_new_level">create_new_level</a></li><li><a href="global.html#create_satisfaction_counter">create_satisfaction_counter</a></li><li><a href="global.html#deep_array_copy">deep_array_copy</a></li><li><a href="global.html#draw_level">draw_level</a></li><li><a href="global.html#erase">erase</a></li><li><a href="global.html#get_box_index">get_box_index</a></li><li><a href="global.html#get_cookie">get_cookie</a></li><li><a href="global.html#get_target_index">get_target_index</a></li><li><a href="global.html#get_user_level_by_index">get_user_level_by_index</a></li><li><a href="global.html#get_user_level_by_name">get_user_level_by_name</a></li><li><a href="global.html#insert_into_ranking">insert_into_ranking</a></li><li><a href="global.html#is_box_satisfied">is_box_satisfied</a></li><li><a href="global.html#is_level_completed">is_level_completed</a></li><li><a href="global.html#is_level_valid">is_level_valid</a></li><li><a href="global.html#link_controls">link_controls</a></li><li><a href="global.html#load_game_state">load_game_state</a></li><li><a href="global.html#move_box_from">move_box_from</a></li><li><a href="global.html#move_box_to">move_box_to</a></li><li><a href="global.html#move_game_to_ranking">move_game_to_ranking</a></li><li><a href="global.html#next_queued_action">next_queued_action</a></li><li><a href="global.html#place">place</a></li><li><a href="global.html#play_edited_level">play_edited_level</a></li><li><a href="global.html#play_game">play_game</a></li><li><a href="global.html#play_level_at">play_level_at</a></li><li><a href="global.html#play_level_on_default_game_wrapper">play_level_on_default_game_wrapper</a></li><li><a href="global.html#play_single_level">play_single_level</a></li><li><a href="global.html#push_box">push_box</a></li><li><a href="global.html#remove_box">remove_box</a></li><li><a href="global.html#remove_cookie">remove_cookie</a></li><li><a href="global.html#remove_finish_button_from_game_wrapper">remove_finish_button_from_game_wrapper</a></li><li><a href="global.html#remove_from_ranking">remove_from_ranking</a></li><li><a href="global.html#remove_paused_user_level">remove_paused_user_level</a></li><li><a href="global.html#remove_saved_game">remove_saved_game</a></li><li><a href="global.html#remove_target">remove_target</a></li><li><a href="global.html#remove_user_level">remove_user_level</a></li><li><a href="global.html#remove_wall">remove_wall</a></li><li><a href="global.html#reset_buttons_state">reset_buttons_state</a></li><li><a href="global.html#reset_game_state">reset_game_state</a></li><li><a href="global.html#resize_level">resize_level</a></li><li><a href="global.html#resize_level_or_show_error">resize_level_or_show_error</a></li><li><a href="global.html#satisfied_boxes_count">satisfied_boxes_count</a></li><li><a href="global.html#save_game">save_game</a></li><li><a href="global.html#save_game_state">save_game_state</a></li><li><a href="global.html#save_new_user_level">save_new_user_level</a></li><li><a href="global.html#save_paused_user_level">save_paused_user_level</a></li><li><a href="global.html#save_user_level">save_user_level</a></li><li><a href="global.html#set_cookie">set_cookie</a></li><li><a href="global.html#split_levels_by_difficulty">split_levels_by_difficulty</a></li><li><a href="global.html#unlink_controls">unlink_controls</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Mar 28 2021 18:01:26 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

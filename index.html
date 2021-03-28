@@ -235,9 +235,6 @@
       <div class="level-ui-wrapper">
 
       </div>
-      <button class="btn warning" id="finish-game-btn">
-        Finish game
-      </button>
     </div>
 
     <div class='modal-wrapper' id="level-completed-wrapper">
@@ -348,7 +345,26 @@
       <button class='btn' id="accept-cookies-btn"> Ok </button>
     </div>
 
+    <audio id="game-music" volume="0.5" loop="true">
+      <source src="sounds/music.mp3" type='audio/mpeg'>
+    </audio>
+
+    <div id="volume-switch">
+      <script src="scripts/audio.js"></script>
+      <button class="btn" onclick="mute_game_music()">
+        <ion-icon name="volume-high-outline"></ion-icon>
+      </button>
+      <button class="btn hidden" onclick="unmute_game_music()">
+        <ion-icon name="volume-mute-outline"></ion-icon>
+      </button>
+    </div>
+
   </main>
+
+  <div id="testing" style="display: none;">
+    <button class="btn" onclick="run_all_tests"> Run all tests </button>
+    <div id="test-results"></div>
+  </div>
 
 
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
@@ -374,6 +390,15 @@
   <script src="scripts/level_editor.js"></script>
   <script src="scripts/game_state.js"></script>
   <script src="scripts/game.js"></script>
+
+
+  <!-- Tests -->
+  <script src="tests/testing.js"></script>
+  <script src="tests/level.js"></script>
+  <script src="tests/game_logic.js"></script>
+  <script src="tests/game_state.js"></script>
+  <script src="tests/load_and_save.js"></script>
+
 
   <script src="scripts/main.js"></script>
 </body>

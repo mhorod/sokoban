@@ -40,7 +40,9 @@ function next_queued_action(handler) {
   setTimeout(() => next_queued_action(handler), NEXT_ACTION_TIMEOUT)
 }
 
-
+/**
+ * Removes previously set binding of keyboard events
+ */
 function unlink_controls() {
   document.removeEventListener("keydown", current_event_listener)
 }

@@ -155,7 +155,7 @@ function show_ranking(game_state) {
       row.innerHTML += `<td><button class="btn remove-ranking-entry">Remove</td></td>`
       element.appendChild(row)
       row.querySelector('.remove-ranking-entry').onclick = _ => {
-        remove_ranking_entry(entry, ranking)
+        remove_from_ranking(entry, ranking)
         show_ranking(game_state)
         save_game_state(game_state)
       }

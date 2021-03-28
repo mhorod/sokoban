@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: load_and_save.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: load_and_save.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Saving and loading game state (from cookies)
+// We opted for naive and inefficient saving for simplicty
+// though interface flexibility allows to easily replace it
+
+/**
+ * Set's a cookie
+ * 
+ * @param {string} name Cookie name
+ * @param {string} value Cookie value
+ */
+function set_cookie(name, value) {
+  Cookies.set(name, value, { sameSite: 'strict', expires: 10 * 365 })
+}
+
+/**
+ *  
+ * @param {string} name Name of the cookie to get value of
+ * @return {string|undefined}
+ */
+function get_cookie(name) {
+  return Cookies.get(name)
+}
+/**
+ * 
+ * @param {string} name Name of the cookie to remove
+ */
+function remove_cookie(name) {
+  Cookies.remove(name)
+}
+
+/**
+ * Saves user acknowledgement of cookies
+ */
+function accept_cookies() {
+  set_cookie("cookies-accepted", "true")
+  check_cookies_accepted()
+}
+/**
+ * Displays a message if cookies weren't acknowledged
+ */
+function check_cookies_accepted() {
+  if (get_cookie("cookies-accepted") != undefined)
+    document.getElementById("cookies-popup").style.display = "none"
+}
+
+/**
+ * Removes all cookies related to game state
+ */
+function reset_game_state() {
+  let game_state = load_game_state()
+  for (let game of game_state.saved_games)
+    remove_cookie(`saved-game: ${game.name}`)
+
+  for (let user_level of game_state.user_levels)
+    remove_cookie(`user-level: ${user_level.name}`)
+
+  for (let user_level_game of game_state.user_level_games)
+    remove_cookie(`user-level-game: ${user_level_game.name}`)
+  remove_cookie('game-state')
+}
+
+/**
+ * Saves serialized game state elements in cookies
+ */
+class SaveToCookie {
+  save_game_state(game_state, serialized) {
+    this.clear_unused_cookies(game_state)
+    let cookie_name = `game-state`
+    set_cookie(cookie_name, serialized)
+  }
+
+  save_game(name, serialized) {
+    let cookie_name = `saved-game: ${name}`
+    set_cookie(cookie_name, serialized)
+  }
+
+  save_user_level(name, serialized) {
+    let cookie_name = `user-level: ${name}`
+    set_cookie(cookie_name, serialized)
+  }
+
+  save_paused_user_level(name, serialized) {
+    let cookie_name = `paused-user-level: ${name}`
+    set_cookie(cookie_name, serialized)
+  }
+
+  clear_unused_cookies(new_game_state) {
+    let deserializer = new BasicDeserializer()
+    let loader = new LoadFromCookie()
+    let serialized = loader.load_game_state()
+
+    if (serialized == undefined) return
+    let current_game_state = deserializer.deserialize_game_state(serialized)
+
+    for (let name of current_game_state.saved_games)
+      if (new_game_state.saved_games.every(g => g.name != name)) {
+        remove_cookie(`saved-game: ${name}`)
+      }
+
+    for (let name of current_game_state.user_levels)
+      if (new_game_state.user_levels.every(l => l.name != name)) {
+        remove_cookie(`user-level: ${name}`)
+      }
+
+    for (let name of current_game_state.paused_user_levels)
+      if (new_game_state.paused_user_levels.every(l => l.name != name)) {
+        remove_cookie(`paused-user-level: ${name}`)
+      }
+
+  }
+}
+
+/**
+ * Loads serialized game state elements from cookies
+ */
+class LoadFromCookie {
+  load_game_state() {
+    let cookie_name = `game-state`
+    return get_cookie(cookie_name)
+  }
+
+  load_game(name) {
+    let cookie_name = `saved-game: ${name}`
+    return get_cookie(cookie_name)
+  }
+
+  load_user_level(name) {
+    let cookie_name = `user-level: ${name}`
+    return get_cookie(cookie_name)
+  }
+
+  load_paused_user_level(name) {
+    let cookie_name = `paused-user-level: ${name}`
+    return get_cookie(cookie_name)
+  }
+}
+
+class BasicSerializer {
+  serialize_game_state(game_state) {
+    let game_state_to_save = new GameState()
+    game_state_to_save.ranking = game_state.ranking
+    game_state_to_save.next_user_level_index = game_state.next_user_level_index
+
+    // Single cookie has a size limit, so every game and level are stored separately
+    game_state_to_save.saved_games = Array.from(game_state.saved_games, e => e.name)
+    game_state_to_save.user_levels = Array.from(game_state.user_levels, e => e.name)
+    game_state_to_save.paused_user_levels = Array.from(game_state.paused_user_levels, e => e.name)
+    return JSON.stringify(game_state_to_save)
+  }
+
+  serialize_game(game) {
+    return JSON.stringify(game)
+  }
+  serialize_level(level) {
+    return JSON.stringify(level)
+  }
+}
+
+class BasicDeserializer {
+  deserialize_game_state(serialized) {
+    return JSON.parse(serialized)
+  }
+
+  deserialize_game(serialized) {
+    return JSON.parse(serialized)
+  }
+  deserialize_level(serialized) {
+    return JSON.parse(serialized)
+  }
+}
+
+
+/** Saves game state using provided serializer and saver
+ * 
+ * @param {GameState} game_state 
+ * @param {Serializer} serializer 
+ * @param {Saver} saver 
+ */
+function save_game_state(
+  game_state,
+  serializer = new BasicSerializer(),
+  saver = new SaveToCookie()) {
+
+  saver.save_game_state(game_state, serializer.serialize_game_state(game_state))
+  for (let game of game_state.saved_games)
+    saver.save_game(game.name, serializer.serialize_game(game))
+
+  for (let level of game_state.user_levels)
+    saver.save_user_level(level.name, serializer.serialize_level(level))
+
+  for (let level of game_state.paused_user_levels)
+    saver.save_paused_user_level(level.name, serializer.serialize_level(level))
+
+}
+/** Loads game state using provided deserializer and loader
+ * 
+ * @param {Deserializer} deserializer 
+ * @param {Loader} loader 
+ */
+function load_game_state(
+  deserializer = new BasicDeserializer(),
+  loader = new LoadFromCookie()) {
+
+  let game_state = new GameState()
+  let loaded_state = loader.load_game_state()
+  if (loaded_state != undefined) {
+    let state = deserializer.deserialize_game_state(loaded_state)
+    game_state.ranking = state.ranking
+    game_state.next_user_level_index = state.next_user_level_index
+
+    for (let name of state.saved_games)
+      game_state.saved_games.push(deserializer.deserialize_game(loader.load_game(name)))
+
+    for (let name of state.user_levels)
+      game_state.user_levels.push(deserializer.deserialize_level(loader.load_user_level(name)))
+
+    for (let name of state.paused_user_levels)
+      game_state.paused_user_levels.push(deserializer.deserialize_level(loader.load_paused_user_level(name)))
+  }
+
+  return game_state
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BasicLevelDisplay.html">BasicLevelDisplay</a></li><li><a href="Game.html">Game</a></li><li><a href="GameLogic.html">GameLogic</a></li><li><a href="GameState.html">GameState</a></li><li><a href="Level.html">Level</a></li><li><a href="LevelDisplay.html">LevelDisplay</a></li><li><a href="LoadFromCookie.html">LoadFromCookie</a></li><li><a href="RankingEntry.html">RankingEntry</a></li><li><a href="SatisfactionCounter.html">SatisfactionCounter</a></li><li><a href="SaveToCookie.html">SaveToCookie</a></li></ul><h3>Global</h3><ul><li><a href="global.html#accept_cookies">accept_cookies</a></li><li><a href="global.html#action_to_offset">action_to_offset</a></li><li><a href="global.html#Actions">Actions</a></li><li><a href="global.html#add_finish_button_to_level_game_wrapper">add_finish_button_to_level_game_wrapper</a></li><li><a href="global.html#apply_action">apply_action</a></li><li><a href="global.html#apply_edition">apply_edition</a></li><li><a href="global.html#apply_game_action">apply_game_action</a></li><li><a href="global.html#arrays_equal">arrays_equal</a></li><li><a href="global.html#can_move_or_push">can_move_or_push</a></li><li><a href="global.html#can_push_box">can_push_box</a></li><li><a href="global.html#can_walk_into_without_pushing">can_walk_into_without_pushing</a></li><li><a href="global.html#check_cookies_accepted">check_cookies_accepted</a></li><li><a href="global.html#clone_game">clone_game</a></li><li><a href="global.html#clone_level">clone_level</a></li><li><a href="global.html#create_level_ui">create_level_ui</a></li><li><a href="global.html#create_new_level">create_new_level</a></li><li><a href="global.html#create_satisfaction_counter">create_satisfaction_counter</a></li><li><a href="global.html#deep_array_copy">deep_array_copy</a></li><li><a href="global.html#draw_level">draw_level</a></li><li><a href="global.html#erase">erase</a></li><li><a href="global.html#get_box_index">get_box_index</a></li><li><a href="global.html#get_cookie">get_cookie</a></li><li><a href="global.html#get_target_index">get_target_index</a></li><li><a href="global.html#get_user_level_by_index">get_user_level_by_index</a></li><li><a href="global.html#get_user_level_by_name">get_user_level_by_name</a></li><li><a href="global.html#insert_into_ranking">insert_into_ranking</a></li><li><a href="global.html#is_box_satisfied">is_box_satisfied</a></li><li><a href="global.html#is_level_completed">is_level_completed</a></li><li><a href="global.html#is_level_valid">is_level_valid</a></li><li><a href="global.html#link_controls">link_controls</a></li><li><a href="global.html#load_game_state">load_game_state</a></li><li><a href="global.html#move_box_from">move_box_from</a></li><li><a href="global.html#move_box_to">move_box_to</a></li><li><a href="global.html#move_game_to_ranking">move_game_to_ranking</a></li><li><a href="global.html#next_queued_action">next_queued_action</a></li><li><a href="global.html#place">place</a></li><li><a href="global.html#play_edited_level">play_edited_level</a></li><li><a href="global.html#play_game">play_game</a></li><li><a href="global.html#play_level_at">play_level_at</a></li><li><a href="global.html#play_level_on_default_game_wrapper">play_level_on_default_game_wrapper</a></li><li><a href="global.html#play_single_level">play_single_level</a></li><li><a href="global.html#push_box">push_box</a></li><li><a href="global.html#remove_box">remove_box</a></li><li><a href="global.html#remove_cookie">remove_cookie</a></li><li><a href="global.html#remove_finish_button_from_game_wrapper">remove_finish_button_from_game_wrapper</a></li><li><a href="global.html#remove_from_ranking">remove_from_ranking</a></li><li><a href="global.html#remove_paused_user_level">remove_paused_user_level</a></li><li><a href="global.html#remove_saved_game">remove_saved_game</a></li><li><a href="global.html#remove_target">remove_target</a></li><li><a href="global.html#remove_user_level">remove_user_level</a></li><li><a href="global.html#remove_wall">remove_wall</a></li><li><a href="global.html#reset_buttons_state">reset_buttons_state</a></li><li><a href="global.html#reset_game_state">reset_game_state</a></li><li><a href="global.html#resize_level">resize_level</a></li><li><a href="global.html#resize_level_or_show_error">resize_level_or_show_error</a></li><li><a href="global.html#satisfied_boxes_count">satisfied_boxes_count</a></li><li><a href="global.html#save_game">save_game</a></li><li><a href="global.html#save_game_state">save_game_state</a></li><li><a href="global.html#save_new_user_level">save_new_user_level</a></li><li><a href="global.html#save_paused_user_level">save_paused_user_level</a></li><li><a href="global.html#save_user_level">save_user_level</a></li><li><a href="global.html#set_cookie">set_cookie</a></li><li><a href="global.html#split_levels_by_difficulty">split_levels_by_difficulty</a></li><li><a href="global.html#unlink_controls">unlink_controls</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Mar 28 2021 18:01:26 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

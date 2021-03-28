@@ -23,6 +23,10 @@ class Level {
   }
 }
 
+/** Creates an independent copy of the level
+ * 
+ * @param {Level} level 
+ */
 function clone_level(level) {
   let obj = new Level()
   obj.width = level.width;
@@ -39,11 +43,22 @@ function clone_level(level) {
   return obj
 }
 
+/** Deeply copies an array
+ * 
+ * @param {any[]} array 
+ * @returns {any[]} deep copy of the array
+ */
 function deep_array_copy(array) {
   if (array == undefined) return undefined
   return JSON.parse(JSON.stringify(array));
 }
 
+/** Checks if arrays contain elements equal with == operator
+ * 
+ * @param {any[]} first 
+ * @param {any[]} second 
+ * @returns {boolean}
+ */
 function arrays_equal(first, second) {
   if (first == undefined || second == undefined) return false
   if (first.length != second.length) return false;
@@ -51,26 +66,54 @@ function arrays_equal(first, second) {
   return r
 }
 
+/** Checks if given level is completed (all box are satisfied)
+ *  
+ * @param {Level} level 
+ * @returns {boolean}  true if level is completed, false otherwise 
+ */
 function is_level_completed(level) {
   return level.boxes.every(box => is_box_satisfied(level, box))
 }
 
+/** Returns index of box in the level
+ * 
+ * @param {Level} level 
+ * @param {number[]} box Position of the box
+ * @returns {number}
+ */
 function get_box_index(level, box) {
   for (let i = 0; i < level.boxes.length; i++)
     if (arrays_equal(level.boxes[i], box))
       return i
 }
 
+/** Checks if given box is satisfied (there's a target on its position)
+ * 
+ * @param {Level} level 
+ * @param {number[]} box 
+ * @returns {boolean}
+ */
 function is_box_satisfied(level, box) {
   return level.targets.some(target => arrays_equal(target, box))
 }
 
+/** Returns index of target in the level
+ * 
+ * @param {Level} level 
+ * @param {number[]} target Position of the target
+ * @returns {number}
+ */
 function get_target_index(level, target) {
   for (let i = 0; i < level.targets.length; i++)
     if (arrays_equal(level.targets[i], target))
       return i
 }
 
+/** Counts how many boxes are satisfied
+ * 
+ * @param {Level} level 
+ * @returns {number}
+ */
 function satisfied_boxes_count(level) {
   let result = 0
   for (let box of level.boxes)
@@ -78,15 +121,29 @@ function satisfied_boxes_count(level) {
   return result
 }
 
-
+/** Removes a wall from given position if there's any
+ * 
+ * @param {Level} level 
+ * @param {number} wall 
+ */
 function remove_wall(level, wall) {
   remove_level_object(level.walls, wall)
 }
 
+/** Removes a target from given position if there's any
+ * 
+ * @param {Level} level 
+ * @param {number} target 
+ */
 function remove_target(level, target) {
   remove_level_object(level.targets, target)
 }
 
+/** Removes a box from given position if there's any
+ * 
+ * @param {Level} level 
+ * @param {number} box
+ */
 function remove_box(level, box) {
   remove_level_object(level.boxes, box)
 }
@@ -100,6 +157,16 @@ function remove_level_object(array, object) {
     array.splice(index, 1)
 }
 
+/** Checks if given position allows to be put on it.
+ *  Position cannot be wall and cannot contain a box 
+ *  
+ *  Does not consider player because only player can move elements around
+ *  and there's only one player
+ *  
+ * @param {Levels} level 
+ * @param {number[]} position 
+ * @returns {boolean}
+ */
 function can_walk_into_without_pushing(level, position) {
   let [x, y] = position
 
@@ -115,7 +182,13 @@ function can_walk_into_without_pushing(level, position) {
   else
     return true
 }
-
+/** Checks whether box can be pushed by offset
+ * 
+ * @param {LeveL} level 
+ * @param {number[]} box_position 
+ * @param {number[]} offset 
+ * @returns {boolean}
+ */
 function can_push_box(level, box_position, offset) {
   let [x, y] = box_position
   let [dx, dy] = offset
@@ -124,9 +197,18 @@ function can_push_box(level, box_position, offset) {
   return can_walk_into_without_pushing(level, [x, y]);
 }
 
+/** Checks whether player can move by offset
+ * 
+ * @param {Level} level 
+ * @param {number} offset 
+ * @returns {boolean}
+ */
 function can_move_or_push(level, offset) {
   let [x, y] = level.player
   let [dx, dy] = offset
+
+  if (dx * dy != 0 || Math.abs(dx) > 1 || Math.abs(dy) > 1)
+    return false
 
   x += dx
   y += dy
@@ -138,7 +220,6 @@ function can_move_or_push(level, offset) {
   else
     return false;
 }
-
 
 function move(position, offset) {
   let [x, y] = position

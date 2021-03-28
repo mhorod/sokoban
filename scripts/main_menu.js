@@ -20,6 +20,7 @@ function link_main_menu_buttons() {
 function back_to_main_menu() {
   close_all_menus()
   open_main_menu()
+  stop_game_music()
 }
 
 function close_all_menus() {

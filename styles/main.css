@@ -188,3 +188,22 @@ input[type=text] {
   display: flex;
   align-items: center;
 }
+
+.test-passed {
+  color: #55ee62;
+}
+
+.test-failed {
+  color: #ee5555;
+}
+
+#test-results {
+  padding: 20px;
+}
+
+#volume-switch {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  font-size: 1.5em;
+}

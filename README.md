@@ -46,7 +46,7 @@ Size has to be between 1x1 and 30x20 tiles
 # Testing and documentation
 
 ### Tests
-To run tests open developer console and type `enable_tests`.
+To run tests open developer console and type `enable_tests()`.
 A button will show up, pressing it will run all provided tests.
 
 ### Documentation

@@ -58,7 +58,7 @@ function draw_level(level, on_tile_click) {
   let scale = 1
   if (level.width >= 10 || level.height >= 10) {
     scale = 1 + (10 - Math.max(level.width, level.height)) / 40
-    element.style.transform = `scale(${Math.round(100 * scale)}%)`
+    element.style.transform = `scale(${scale})`
   }
 
 
